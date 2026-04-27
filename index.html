@@ -1063,11 +1063,15 @@
                 "retina_detect": true
             });
 
-            // Re-run Notification Engine if permission is already granted
-            if (Notification.permission === "granted" && localStorage.getItem('notifs') === 'on') {
-                startNotificationEngine();
-            } else if (!localStorage.getItem('notif_seen')) {
-                setTimeout(() => document.getElementById('notif-prompt').classList.remove('hidden'), 3000);
+            // Re-run Notification Engine if permission is already granted, else show prompt immediately
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    localStorage.setItem('notifs', 'on');
+                    startNotificationEngine();
+                } else if (Notification.permission !== "denied") {
+                    // إظهار رسالة التفعيل فوراً وبدون تأخير إذا لم تكن الإشعارات مفعلة
+                    document.getElementById('notif-prompt').classList.remove('hidden');
+                }
             }
             
             showTab('schedule');
