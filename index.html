@@ -522,9 +522,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6 text-center">
-                        <button onclick="enableNotifications()" class="text-sm bg-brand-main hover:bg-brand-light text-white py-2 px-6 rounded-lg transition-colors border border-brand-neon/50">
-                            فحص صلاحية الإشعارات
+                    
+                    <div class="mt-6 flex flex-col gap-2">
+                        <!-- Added Test Notification Button -->
+                        <button onclick="sendPushNotification('تجربة الإشعارات', 'إذا رأيت هذه الرسالة وسمعت الصوت، فالإشعارات تعمل بنجاح!')" class="text-sm bg-brand-gold hover:bg-[#b8860b] text-brand-dark font-bold py-3 px-6 rounded-lg transition-colors border border-brand-gold/50 shadow-md">
+                            <i class="fa-solid fa-bullhorn mr-1"></i> تجربة الإشعارات الآن
+                        </button>
+                        <button onclick="enableNotifications()" class="text-sm bg-brand-dark hover:bg-brand-main text-white py-2 px-6 rounded-lg transition-colors border border-brand-light/30">
+                            فحص صلاحية الإشعارات بالمتصفح
                         </button>
                     </div>
                 </div>
@@ -772,27 +777,47 @@
         }
 
         function sendPushNotification(title, body) {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png",
-                        vibrate: [200, 100, 200],
-                        tag: "nakhtem-notif",
-                        requireInteraction: true
-                    });
-                }).catch(err => {
-                    try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); } catch(e){}
-                });
-            } else {
-                try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); } catch(e){}
+            // محاولة إطلاق تنبيه صوتي خفيف إذا كان المتصفح يسمح
+            try {
+                const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+                audio.play().catch(e => {});
+            } catch(e){}
+
+            // عرض رسالة داخل التطبيق كضمان مرئي
+            showToast(title + " | " + body);
+
+            // إرسال الإشعار الخارجي
+            if (Notification.permission === 'granted') {
+                try {
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistration().then(reg => {
+                            if (reg) {
+                                reg.showNotification(title, {
+                                    body: body,
+                                    icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png",
+                                    vibrate: [200, 100, 200],
+                                    tag: "nakhtem-notif",
+                                    requireInteraction: true
+                                });
+                            } else {
+                                new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
+                            }
+                        }).catch(e => {
+                            new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
+                        });
+                    } else {
+                        new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
+                    }
+                } catch(e) {
+                    console.error("Notif Error:", e);
+                }
             }
         }
 
         function startNotificationEngine() {
             if (Notification.permission !== "granted" || localStorage.getItem('notifs') !== 'on') return;
             
-            // Runs every 60 seconds
+            // Check every 20 seconds to overcome browser background tab throttling
             setInterval(() => {
                 const now = new Date();
                 const currentH = now.getHours();
@@ -800,10 +825,16 @@
                 const dateStr = now.toDateString();
                 const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
                 
+                const currentTotalMins = currentH * 60 + currentM;
+
                 // 1. Check Custom Wird Notifications
                 notifTimes.forEach(timeStr => {
                     const [tH, tM] = timeStr.split(':').map(Number);
-                    if (currentH === tH && currentM === tM) {
+                    const targetTotalMins = tH * 60 + tM;
+                    const diff = currentTotalMins - targetTotalMins;
+
+                    // Window of 15 minutes to catch if the browser was sleeping
+                    if (diff >= 0 && diff <= 15) {
                         const notifKey = `notif_${dateStr}_${tH}_${tM}`; 
                         if (!localStorage.getItem(notifKey)) {
                             sendPushNotification("يلا نختم - حان وقت وردك!", "لا تنسَ قراءة وردك القرآني. افتح التطبيق الآن لتسجيل إنجازك.");
@@ -813,15 +844,19 @@
                 });
 
                 // 2. Check Friday Kahf Notification (Fixed at 09:00 AM)
-                if (dayOfWeek === 5 && currentH === 9 && currentM === 0) {
-                    const kahfKey = `notif_kahf_${dateStr}`;
-                    if (!localStorage.getItem(kahfKey)) {
-                        sendPushNotification("سورة الكهف - نور ما بين الجمعتين", "لا تنسَ قراءة سورة الكهف في هذا اليوم المبارك.");
-                        localStorage.setItem(kahfKey, 'true');
+                if (dayOfWeek === 5) {
+                    const targetTotalMins = 9 * 60; // 09:00 AM
+                    const diff = currentTotalMins - targetTotalMins;
+                    if (diff >= 0 && diff <= 30) { // Window of 30 minutes for Friday
+                        const kahfKey = `notif_kahf_${dateStr}`;
+                        if (!localStorage.getItem(kahfKey)) {
+                            sendPushNotification("سورة الكهف - نور ما بين الجمعتين", "لا تنسَ قراءة سورة الكهف في هذا اليوم المبارك.");
+                            localStorage.setItem(kahfKey, 'true');
+                        }
                     }
                 }
 
-            }, 60000); 
+            }, 20000); // 20 seconds interval
         }
 
         // --- UI & Tabs Management ---
