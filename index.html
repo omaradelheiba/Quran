@@ -991,28 +991,43 @@
             const loader = document.getElementById('schedule-loading');
             renderBox.innerHTML = ''; loader.classList.remove('hidden');
 
-            let url = '';
+            let apiData = null;
+            let ayahs = [];
+
             if(data.plan === 'page') {
                 document.getElementById('task-title').innerText = `الورد: صفحة ${data.current}`;
-                url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
+                const url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
+                apiData = await fetchQuranData(url);
+                if(apiData) ayahs = apiData.ayahs || [];
             } else if(data.plan === 'amma') {
-                url = `https://api.alquran.cloud/v1/surah/${data.current}/quran-uthmani`;
-            } else {
-                document.getElementById('task-title').innerText = `الورد: صفحة ${data.current}`;
-                url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
+                const url = `https://api.alquran.cloud/v1/surah/${data.current}/quran-uthmani`;
+                apiData = await fetchQuranData(url);
+                if(apiData) {
+                    document.getElementById('task-title').innerText = `سورة ${apiData.name.replace('سُورَةُ ', '')}`;
+                    const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
+                    ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+                }
+            } else if(data.plan === 'five') {
+                // Fetch 5 consecutive ayahs across boundaries
+                document.getElementById('task-title').innerText = `الورد: 5 آيات (بدءاً من آية ${data.current})`;
+                try {
+                    const promises = [];
+                    for(let i=0; i<5; i++) {
+                        if(data.current + i <= 6236) { // Max ayahs in Quran
+                            promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${data.current + i}/quran-uthmani`));
+                        }
+                    }
+                    const results = await Promise.all(promises);
+                    ayahs = results.filter(a => a !== null); // The single ayah endpoint returns data matching exactly what we need
+                    apiData = ayahs.length > 0 ? true : null;
+                } catch(e) {
+                    apiData = null;
+                }
             }
 
-            const apiData = await fetchQuranData(url);
             loader.classList.add('hidden');
 
-            if(apiData) {
-                let ayahs = apiData.ayahs || [];
-                if(data.plan === 'amma') {
-                     document.getElementById('task-title').innerText = `سورة ${apiData.name.replace('سُورَةُ ', '')}`;
-                     const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
-                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
-                }
-                
+            if(apiData && ayahs.length > 0) {
                 renderBox.innerHTML = generateQuranHTML(ayahs);
             } else {
                 renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة. يرجى المحاولة لاحقاً.</p>';
@@ -1023,7 +1038,8 @@
             const data = DB.get();
             data.history.push({ step: data.current, type: data.plan, date: new Date().toISOString() });
             
-            if(data.plan === 'page' || data.plan === 'five') data.current++;
+            if(data.plan === 'page') data.current++;
+            else if(data.plan === 'five') data.current += 5; // Increment by 5 ayahs
             else if(data.plan === 'amma') data.current--; 
 
             DB.save(data);
@@ -1036,7 +1052,7 @@
             if (!data || data.history.length === 0) return;
             
             const lastEntry = data.history.pop();
-            data.current = lastEntry.step;
+            data.current = lastEntry.step; // Restore the previous pointer
             
             DB.save(data);
             showToast("تم التراجع إلى الورد السابق");
@@ -1163,7 +1179,11 @@
 
             [...data.history].reverse().forEach(h => {
                 const date = new Date(h.date).toLocaleDateString('ar-EG');
-                const label = h.type === 'page' ? `صفحة ${h.step}` : (h.type === 'amma' ? `سورة رقم ${h.step}` : `صفحة ${h.step}`);
+                
+                let label = '';
+                if(h.type === 'page') label = `صفحة ${h.step}`;
+                else if(h.type === 'amma') label = `سورة رقم ${h.step}`;
+                else label = `من آية ${h.step} لـ ${h.step+4}`;
                 
                 const card = document.createElement('div');
                 card.className = "bg-brand-dark/50 border border-brand-light/30 p-3 md:p-4 rounded-xl text-center cursor-pointer hover:border-brand-neon hover:bg-brand-main/40 transition-all group shadow-sm";
@@ -1185,18 +1205,40 @@
             render.innerHTML = ''; loader.classList.remove('hidden');
             full.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            let url = (type === 'page' || type === 'five') ? `https://api.alquran.cloud/v1/page/${step}/quran-uthmani` : `https://api.alquran.cloud/v1/surah/${step}/quran-uthmani`;
+            let url = '';
+            let isFive = false;
             
-            const apiData = await fetchQuranData(url);
-            loader.classList.add('hidden');
-
-            if(apiData) {
-                let ayahs = apiData.ayahs || [];
-                if(type === 'amma') {
-                     const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
-                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+            if(type === 'page') url = `https://api.alquran.cloud/v1/page/${step}/quran-uthmani`;
+            else if(type === 'amma') url = `https://api.alquran.cloud/v1/surah/${step}/quran-uthmani`;
+            else isFive = true;
+            
+            let ayahs = [];
+            
+            if(!isFive) {
+                const apiData = await fetchQuranData(url);
+                if(apiData) {
+                    ayahs = apiData.ayahs || [];
+                    if(type === 'amma') {
+                         const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
+                         ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+                    }
                 }
+            } else {
+                try {
+                    const promises = [];
+                    for(let i=0; i<5; i++) {
+                        if(step + i <= 6236) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${step + i}/quran-uthmani`));
+                    }
+                    const results = await Promise.all(promises);
+                    ayahs = results.filter(a => a !== null);
+                } catch(e) {}
+            }
+            
+            loader.classList.add('hidden');
+            if(ayahs.length > 0) {
                 render.innerHTML = generateQuranHTML(ayahs);
+            } else {
+                render.innerHTML = '<p class="text-center text-red-400">فشل جلب الورد.</p>';
             }
         }
         function closeReview() { document.getElementById('rev-full-view').classList.add('hidden'); }
