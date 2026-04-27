@@ -261,7 +261,10 @@
                 <i data-lucide="bell-ring" class="w-10 h-10 text-brand-goldLight animate-bounce"></i>
             </div>
             <h2 class="text-2xl font-black mb-3 text-brand-goldLight">تفعيل التنبيهات</h2>
-            <p class="opacity-80 mb-8 leading-relaxed text-sm">سنقوم بتذكيرك بأورادك (يومياً) لتثبيت الحفظ ونيل البركة. يرجى إعطاء الصلاحية للمتصفح.</p>
+            <p class="opacity-80 mb-4 leading-relaxed text-sm">سنقوم بتذكيرك بأورادك (يومياً) لتثبيت الحفظ ونيل البركة. يرجى إعطاء الصلاحية للمتصفح.</p>
+            <div class="bg-brand-neon/10 border border-brand-neon/30 rounded-xl p-3 mb-6 text-xs text-brand-neon text-right">
+                <i class="fa-solid fa-circle-info ml-1"></i> <strong>لضمان وصول التنبيهات:</strong> يرجى إضافة هذا الموقع إلى "الشاشة الرئيسية" (Add to Home Screen) من إعدادات متصفحك ليعمل كتطبيق حقيقي.
+            </div>
             <div class="flex flex-col gap-3">
                 <button onclick="enableNotifications()" class="btn-gold py-4 rounded-xl text-lg w-full font-bold">تفعيل الآن</button>
                 <button onclick="hideNotifPrompt()" class="opacity-50 text-sm hover:text-white mt-2 w-full py-2 transition-colors">تذكيري لاحقاً</button>
@@ -495,6 +498,28 @@
 
     <!-- Application Script -->
     <script>
+        // --- Service Worker Setup (For Mobile Notifications) ---
+        const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+            self.addEventListener('notificationclick', e => {
+                e.notification.close();
+                e.waitUntil(clients.matchAll({type: 'window'}).then(clientsArr => {
+                    if(clientsArr.length) {
+                        clientsArr[0].focus();
+                    } else {
+                        clients.openWindow('/');
+                    }
+                }));
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl).catch(err => console.log("SW Reg Error:", err));
+        }
+
         // --- Core Variables & Initialization ---
         let currentFontSize = window.innerWidth < 768 ? 28 : 44; 
         const renderContainers = [
@@ -573,15 +598,7 @@
                         localStorage.setItem('notifs', 'on');
                         hideNotifPrompt();
                         // Send Test Notification immediately to confirm it works
-                        try { 
-                            new Notification("يلا نختم", { 
-                                body: "تم تفعيل التنبيهات بنجاح! سنذكرك بأورادك إن شاء الله.",
-                                icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png"
-                            }); 
-                        } catch(e) {
-                            console.error("Test Notification Error:", e);
-                            alert("تم إعطاء الصلاحية. ملاحظة: قد تحتاج لإضافة الموقع للشاشة الرئيسية لتعمل الإشعارات بشكل كامل على الموبايل.");
-                        }
+                        sendPushNotification("يلا نختم", "تم تفعيل التنبيهات بنجاح! سنذكرك بأورادك إن شاء الله.");
                         startNotificationEngine();
                     } else {
                         showToast("تم رفض الصلاحية من قبل المتصفح.");
@@ -595,6 +612,24 @@
         function hideNotifPrompt() {
             document.getElementById('notif-prompt').classList.add('hidden');
             localStorage.setItem('notif_seen', 'true');
+        }
+
+        function sendPushNotification(title, body) {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png",
+                        vibrate: [200, 100, 200],
+                        tag: "nakhtem-notif",
+                        requireInteraction: true
+                    });
+                }).catch(err => {
+                    try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); } catch(e){}
+                });
+            } else {
+                try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); } catch(e){}
+            }
         }
 
         function startNotificationEngine() {
@@ -617,16 +652,8 @@
                         
                         // If it hasn't been fired yet for this specific slot today
                         if (!localStorage.getItem(notifKey)) {
-                            try {
-                                new Notification("يلا نختم - حان وقت وردك!", {
-                                    body: "لا تنسَ قراءة وردك القرآني. افتح التطبيق الآن لتسجيل إنجازك.",
-                                    icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png"
-                                });
-                                // Mark as fired
-                                localStorage.setItem(notifKey, 'true');
-                            } catch(e){
-                                console.error("Notification trigger error:", e);
-                            }
+                            sendPushNotification("يلا نختم - حان وقت وردك!", "لا تنسَ قراءة وردك القرآني. افتح التطبيق الآن لتسجيل إنجازك.");
+                            localStorage.setItem(notifKey, 'true');
                         }
                     }
                 });
