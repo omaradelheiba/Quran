@@ -110,6 +110,7 @@
         .nav-btn {
             padding: 0.75rem 1.25rem; border-radius: 0.75rem; transition: all 0.3s;
             color: #a7f3d0; font-weight: 700; opacity: 0.7;
+            display: flex; align-items: center; gap: 0.5rem;
         }
         body.theme-black .nav-btn { color: #d4d4d4; }
         
@@ -220,6 +221,21 @@
         }
         .scroll-thumb:active { cursor: grabbing; transform: translateX(-50%) scale(1.1); }
 
+        /* --- Time Input Styling --- */
+        input[type="time"] {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: #FBE8A6;
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            outline: none;
+        }
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(350deg);
+            cursor: pointer;
+        }
+
         /* --- Utilities --- */
         .spinner {
             width: 40px; height: 40px; border: 3px solid rgba(212, 175, 55, 0.1);
@@ -243,6 +259,15 @@
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- Mobile Menu Styles --- */
+        #mobile-menu-overlay {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #mobile-menu-drawer {
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -254,6 +279,23 @@
     <div class="glow-orb orb-2"></div>
     <div class="glow-orb orb-3"></div>
 
+    <!-- Mobile Navigation Menu (Drawer) -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-[200] bg-black/60 hidden opacity-0 transition-opacity duration-300" onclick="toggleMobileMenu()"></div>
+    <div id="mobile-menu-drawer" class="fixed top-0 right-0 h-full w-64 glass-card border-l border-t-0 border-b-0 border-r-0 rounded-none z-[210] transform translate-x-full transition-transform duration-300 flex flex-col pt-20 px-6 gap-3">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 left-6 text-brand-goldLight text-2xl hover:text-white transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="text-center mb-6">
+            <h2 class="text-xl font-black text-brand-goldLight">القائمة الرئيسية</h2>
+            <div class="h-px bg-brand-gold/30 w-1/2 mx-auto mt-3"></div>
+        </div>
+        <button onclick="showTab('schedule'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-list-check w-6"></i> المجدول</button>
+        <button onclick="showTab('general'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-book-quran w-6"></i> المصحف العام</button>
+        <button onclick="showTab('review'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-clock-rotate-left w-6"></i> المراجعة</button>
+        <button onclick="showTab('notifications'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-bell w-6"></i> التنبيهات</button>
+        <button onclick="showTab('settings'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-gear w-6"></i> الإعدادات</button>
+    </div>
+
     <!-- Notifications Prompt Modal -->
     <div id="notif-prompt" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-md hidden">
         <div class="glass-card p-6 md:p-8 max-w-md w-[90%] text-center border-t-2 border-brand-gold">
@@ -261,9 +303,9 @@
                 <i data-lucide="bell-ring" class="w-10 h-10 text-brand-goldLight animate-bounce"></i>
             </div>
             <h2 class="text-2xl font-black mb-3 text-brand-goldLight">تفعيل التنبيهات</h2>
-            <p class="opacity-80 mb-4 leading-relaxed text-sm">سنقوم بتذكيرك بأورادك (يومياً) لتثبيت الحفظ ونيل البركة. يرجى إعطاء الصلاحية للمتصفح.</p>
+            <p class="opacity-80 mb-4 leading-relaxed text-sm">سنقوم بتذكيرك بأورادك وسورة الكهف لتنال البركة. يرجى إعطاء الصلاحية للمتصفح.</p>
             <div class="bg-brand-neon/10 border border-brand-neon/30 rounded-xl p-3 mb-6 text-xs text-brand-neon text-right">
-                <i class="fa-solid fa-circle-info ml-1"></i> <strong>لضمان وصول التنبيهات:</strong> يرجى إضافة هذا الموقع إلى "الشاشة الرئيسية" (Add to Home Screen) من إعدادات متصفحك ليعمل كتطبيق حقيقي.
+                <i class="fa-solid fa-circle-info ml-1"></i> <strong>لضمان وصول التنبيهات للموبايل:</strong> يرجى إضافة هذا الموقع إلى "الشاشة الرئيسية" (Add to Home Screen) من إعدادات المتصفح.
             </div>
             <div class="flex flex-col gap-3">
                 <button onclick="enableNotifications()" class="btn-gold py-4 rounded-xl text-lg w-full font-bold">تفعيل الآن</button>
@@ -274,42 +316,41 @@
 
     <!-- Header & Navigation -->
     <header class="glass-header shadow-lg sticky top-0 z-40 w-full px-4 py-3 mb-6">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="container mx-auto flex justify-between items-center gap-4">
             
-            <!-- Logo & Theme Toggle -->
-            <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-brand-main flex items-center justify-center border border-brand-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]">
-                        <i data-lucide="book-open-check" class="text-brand-goldLight w-6 h-6 md:w-7 md:h-7"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl md:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-l from-brand-goldLight to-[#fff]">يلا نختم</h1>
-                        <p class="text-[10px] text-brand-glow font-semibold opacity-80">الإصدار الملكي الشامل</p>
-                    </div>
-                </div>
-                <!-- Theme Toggle Button (Mobile visible here, Desktop right) -->
-                <button onclick="toggleTheme()" class="md:hidden w-10 h-10 rounded-full bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition">
-                    <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
+            <!-- Logo & Hamburger Menu -->
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Menu Button (Mobile Only) -->
+                <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-xl bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-brand-main flex items-center justify-center border border-brand-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <i data-lucide="book-open-check" class="text-brand-goldLight w-6 h-6 md:w-7 md:h-7"></i>
+                </div>
+                <div class="hidden md:block">
+                    <h1 class="text-xl md:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-l from-brand-goldLight to-[#fff]">يلا نختم</h1>
+                    <p class="text-[10px] text-brand-glow font-semibold opacity-80">الإصدار الملكي الشامل</p>
+                </div>
             </div>
 
-            <!-- Tabs -->
-            <nav class="flex justify-start md:justify-center items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar w-full md:w-auto bg-brand-dark/40 p-1.5 rounded-2xl border border-brand-light/30">
-                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active whitespace-nowrap text-xs md:text-base"><i class="fa-solid fa-list-check ml-1"></i> المجدول</button>
-                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn whitespace-nowrap text-xs md:text-base"><i class="fa-solid fa-book-quran ml-1"></i> المصحف العام</button>
-                <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn whitespace-nowrap text-xs md:text-base"><i class="fa-solid fa-clock-rotate-left ml-1"></i> المراجعة</button>
+            <!-- Tabs (Desktop Only) -->
+            <nav class="hidden md:flex justify-center items-center gap-2 bg-brand-dark/40 p-1.5 rounded-2xl border border-brand-light/30">
+                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active whitespace-nowrap text-sm"><i class="fa-solid fa-list-check"></i> المجدول</button>
+                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-book-quran"></i> المصحف العام</button>
+                <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-clock-rotate-left"></i> المراجعة</button>
+                <button onclick="showTab('notifications')" id="tab-btn-notifications" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-bell"></i> التنبيهات</button>
                 <button onclick="showTab('settings')" id="tab-btn-settings" class="nav-btn whitespace-nowrap px-4"><i class="fa-solid fa-gear"></i></button>
             </nav>
 
-            <!-- Tools: Font Size & Desktop Theme Toggle -->
-            <div class="hidden md:flex items-center gap-3">
-                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition" title="تبديل المظهر">
+            <!-- Tools: Font Size & Theme Toggle -->
+            <div class="flex items-center gap-2 md:gap-3">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition" title="تبديل المظهر">
                     <i id="theme-icon-desktop" class="fa-solid fa-moon"></i>
                 </button>
-                <div class="flex items-center gap-2 bg-brand-dark/50 p-1.5 rounded-xl border border-brand-light/30">
-                    <button onclick="changeFontSize(1)" class="w-9 h-9 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
-                    <i class="fa-solid fa-font text-gray-400 text-sm mx-1"></i>
-                    <button onclick="changeFontSize(-1)" class="w-9 h-9 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
+                <div class="flex items-center gap-1 bg-brand-dark/50 p-1 rounded-xl border border-brand-light/30">
+                    <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-plus text-xs"></i></button>
+                    <i class="fa-solid fa-font text-gray-400 text-xs mx-1"></i>
+                    <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-minus text-xs"></i></button>
                 </div>
             </div>
         </div>
@@ -355,7 +396,7 @@
                             </div>
                         </div>
                         
-                        <!-- Action Buttons (Improved Sizes) -->
+                        <!-- Action Buttons -->
                         <div class="flex gap-3 relative z-10 w-full">
                             <button onclick="markDone()" class="flex-grow btn-gold py-3 md:py-4 rounded-xl text-base md:text-lg flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-check-circle"></i> أتممت الورد
@@ -438,7 +479,59 @@
             </div>
         </div>
 
-        <!-- ================= 4. TAB: SETTINGS (الإعدادات) ================= -->
+        <!-- ================= 4. TAB: NOTIFICATIONS (إدارة التنبيهات) ================= -->
+        <div id="view-notifications" class="view-content hidden">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mb-3">إدارة التنبيهات والأوراد</h2>
+                <p class="text-brand-glow text-sm md:text-base">تخصيص أوقات تذكيرك بالورد اليومي وقراءة الكهف يوم الجمعة.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Editable Wird Notifications -->
+                <div class="glass-card p-6 md:p-8">
+                    <div class="flex items-center justify-between mb-6 border-b border-brand-light/30 pb-4">
+                        <h3 class="text-lg md:text-xl font-bold text-brand-goldLight flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> أوقات التذكير بالأوراد
+                        </h3>
+                        <button onclick="addNotifTime()" class="w-8 h-8 rounded-full bg-brand-neon/20 border border-brand-neon text-brand-neon hover:bg-brand-neon hover:text-white flex items-center justify-center transition-colors" title="إضافة وقت جديد">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="notif-times-list" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Dynamic list of times will be rendered here -->
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 mt-4 leading-relaxed bg-brand-dark/50 p-3 rounded-lg border border-brand-light/20">
+                        <i class="fa-solid fa-circle-info text-brand-neon"></i> يمكنك إضافة أو تعديل أوقات التذكير الخاصة بك. سيتم تنبيهك في هذه الأوقات بشكل يومي.
+                    </p>
+                </div>
+
+                <!-- Fixed Friday Notification -->
+                <div class="glass-card p-6 md:p-8 border-t-4 border-brand-gold flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-mosque text-brand-gold"></i> تذكير يوم الجمعة
+                        </h3>
+                        <div class="bg-brand-dark/60 border border-brand-gold/30 rounded-xl p-5 text-center shadow-inner relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 opacity-10 text-brand-gold"><i class="fa-solid fa-star-and-crescent text-6xl"></i></div>
+                            <h4 class="text-lg font-bold text-brand-goldLight mb-2 relative z-10">قراءة سورة الكهف</h4>
+                            <p class="text-gray-300 text-sm relative z-10">سيتم إرسال إشعار تذكير بقراءة سورة الكهف يومياً كل جمعة في تمام الساعة <span class="text-brand-neon font-mono font-bold">09:00 ص</span>.</p>
+                            <div class="mt-4 inline-block bg-brand-neon/20 text-brand-neon border border-brand-neon/50 px-4 py-1 rounded-full text-xs font-bold relative z-10">
+                                <i class="fa-solid fa-check mr-1"></i> مفعل تلقائياً
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <button onclick="enableNotifications()" class="text-sm bg-brand-main hover:bg-brand-light text-white py-2 px-6 rounded-lg transition-colors border border-brand-neon/50">
+                            فحص صلاحية الإشعارات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 5. TAB: SETTINGS (الإعدادات) ================= -->
         <div id="view-settings" class="view-content hidden">
             <div class="text-center mb-10">
                 <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mb-3">أنظمة الحفظ والمراجعة</h2>
@@ -541,6 +634,27 @@
             }
         }
 
+        // --- Mobile Menu Management ---
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const drawer = document.getElementById('mobile-menu-drawer');
+            const isHidden = overlay.classList.contains('hidden');
+            
+            if (isHidden) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    drawer.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
         // --- Theme Management ---
         function initTheme() {
             const savedTheme = localStorage.getItem('nakhtem_theme');
@@ -561,8 +675,11 @@
         function updateThemeIcons() {
             const isBlack = document.body.classList.contains('theme-black');
             const iconClass = isBlack ? 'fa-sun' : 'fa-moon';
-            document.getElementById('theme-icon-desktop').className = `fa-solid ${iconClass}`;
-            document.getElementById('theme-icon-mobile').className = `fa-solid ${iconClass}`;
+            const desktopIcon = document.getElementById('theme-icon-desktop');
+            const mobileIcon = document.getElementById('theme-icon-mobile');
+            
+            if (desktopIcon) desktopIcon.className = `fa-solid ${iconClass}`;
+            if (mobileIcon) mobileIcon.className = `fa-solid ${iconClass}`;
         }
 
         // --- Database Logic (LocalStorage) ---
@@ -590,14 +707,54 @@
             }
         }
 
-        // --- Notifications Engine (Background Check) ---
+        // --- Notifications Management & Engine ---
+        let notifTimes = JSON.parse(localStorage.getItem('nakhtem_notif_times')) || ["05:00", "13:00", "16:00", "20:00"];
+
+        function renderNotifSettings() {
+            const list = document.getElementById('notif-times-list');
+            list.innerHTML = '';
+            notifTimes.forEach((time, index) => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between bg-brand-dark/40 border border-brand-light/30 p-2 px-4 rounded-xl";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="fa-regular fa-bell text-brand-neon"></i>
+                        <input type="time" value="${time}" onchange="updateNotifTime(${index}, this.value)" class="bg-transparent border-none text-white text-lg font-mono outline-none">
+                    </div>
+                    <button onclick="deleteNotifTime(${index})" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+            localStorage.setItem('nakhtem_notif_times', JSON.stringify(notifTimes));
+        }
+
+        function updateNotifTime(index, val) {
+            if (val) {
+                notifTimes[index] = val;
+                localStorage.setItem('nakhtem_notif_times', JSON.stringify(notifTimes));
+                showToast("تم تحديث وقت التذكير بنجاح");
+            }
+        }
+
+        function deleteNotifTime(index) {
+            notifTimes.splice(index, 1);
+            renderNotifSettings();
+            showToast("تم حذف التذكير");
+        }
+
+        function addNotifTime() {
+            notifTimes.push("12:00");
+            renderNotifSettings();
+        }
+
         function enableNotifications() {
             if ("Notification" in window) {
                 Notification.requestPermission().then(p => {
                     if (p === 'granted') {
                         localStorage.setItem('notifs', 'on');
                         hideNotifPrompt();
-                        // Send Test Notification immediately to confirm it works
                         sendPushNotification("يلا نختم", "تم تفعيل التنبيهات بنجاح! سنذكرك بأورادك إن شاء الله.");
                         startNotificationEngine();
                     } else {
@@ -635,28 +792,35 @@
         function startNotificationEngine() {
             if (Notification.permission !== "granted" || localStorage.getItem('notifs') !== 'on') return;
             
-            // Runs every 60 seconds to check the time
+            // Runs every 60 seconds
             setInterval(() => {
                 const now = new Date();
-                const hours = now.getHours();
-                const mins = now.getMinutes();
+                const currentH = now.getHours();
+                const currentM = now.getMinutes();
                 const dateStr = now.toDateString();
+                const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
                 
-                // Target Hours to send notifications (5 AM, 1 PM, 4 PM, 8 PM)
-                const targetTimes = [5, 13, 16, 20];
-                
-                targetTimes.forEach(target => {
-                    // Check if we are at the target hour AND within the first 15 minutes of it
-                    if (hours === target && mins <= 15) {
-                        const notifKey = `notif_${dateStr}_${target}`; // Unique key per notification per day
-                        
-                        // If it hasn't been fired yet for this specific slot today
+                // 1. Check Custom Wird Notifications
+                notifTimes.forEach(timeStr => {
+                    const [tH, tM] = timeStr.split(':').map(Number);
+                    if (currentH === tH && currentM === tM) {
+                        const notifKey = `notif_${dateStr}_${tH}_${tM}`; 
                         if (!localStorage.getItem(notifKey)) {
                             sendPushNotification("يلا نختم - حان وقت وردك!", "لا تنسَ قراءة وردك القرآني. افتح التطبيق الآن لتسجيل إنجازك.");
                             localStorage.setItem(notifKey, 'true');
                         }
                     }
                 });
+
+                // 2. Check Friday Kahf Notification (Fixed at 09:00 AM)
+                if (dayOfWeek === 5 && currentH === 9 && currentM === 0) {
+                    const kahfKey = `notif_kahf_${dateStr}`;
+                    if (!localStorage.getItem(kahfKey)) {
+                        sendPushNotification("سورة الكهف - نور ما بين الجمعتين", "لا تنسَ قراءة سورة الكهف في هذا اليوم المبارك.");
+                        localStorage.setItem(kahfKey, 'true');
+                    }
+                }
+
             }, 60000); 
         }
 
@@ -666,8 +830,9 @@
             document.getElementById(`view-${id}`).classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(`tab-btn-${id}`);
-            if(activeBtn) activeBtn.classList.add('active');
+            // Highlight active tab in Desktop
+            const activeDesktop = document.getElementById(`tab-btn-${id}`);
+            if(activeDesktop) activeDesktop.classList.add('active');
 
             const scroller = document.getElementById('auto-scroll-container');
             if(id === 'schedule' || id === 'general' || id === 'review') {
@@ -679,6 +844,7 @@
             if(id === 'schedule') renderSchedule();
             if(id === 'general') initGeneralTab();
             if(id === 'review') renderReviewGrid();
+            if(id === 'notifications') renderNotifSettings();
         }
 
         function showToast(msg) {
@@ -735,10 +901,6 @@
                             </div>
                         </div>
                     `;
-
-                    if (currentSurahNumber !== 1 && currentSurahNumber !== 9) {
-                        html += `<div class="text-center mb-8 md:mb-10 text-2xl md:text-4xl text-brand-goldLight drop-shadow-md" style="font-family: 'Amiri Quran', serif !important;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
-                    }
                 }
 
                 let text = ayah.text;
@@ -838,9 +1000,7 @@
             const data = DB.get();
             if (!data || data.history.length === 0) return;
             
-            // Pop the last saved history entry
             const lastEntry = data.history.pop();
-            // Revert current pointer to the step we just un-did
             data.current = lastEntry.step;
             
             DB.save(data);
@@ -1069,7 +1229,7 @@
                     localStorage.setItem('notifs', 'on');
                     startNotificationEngine();
                 } else if (Notification.permission !== "denied") {
-                    // إظهار رسالة التفعيل فوراً وبدون تأخير إذا لم تكن الإشعارات مفعلة
+                    // Show prompt directly if permission is neither granted nor denied yet
                     document.getElementById('notif-prompt').classList.remove('hidden');
                 }
             }
