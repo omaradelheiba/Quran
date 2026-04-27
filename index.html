@@ -3,260 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>يلا نختم | الإصدار الاحترافي</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <title>يلا نختم | الإصدار الملكي الشامل</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome & Lucide -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config with Dynamic CSS Variables for Theming -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        quran: ['Amiri Quran', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: 'var(--brand-dark)',    
+                            main: 'var(--brand-main)',    
+                            light: 'var(--brand-light)',   
+                            neon: 'var(--brand-neon)',    
+                            glow: 'var(--brand-glow)',    
+                            gold: '#D4AF37',    
+                            goldLight: '#FBE8A6', 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
+        /* --- Dynamic Theme Variables --- */
         :root {
-            /* اللون الأخضر الغامق جداً الذي طلبته */
-            --forest-black: #040d04; 
-            --forest-deep: #081a08;
-            --gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-strong: rgba(255, 255, 255, 0.08);
+            --brand-dark: #011a14;
+            --brand-main: #064e3b;
+            --brand-light: #047857;
+            --brand-neon: #10b981;
+            --brand-glow: #34d399;
+        }
+
+        /* Black Theme Overrides */
+        body.theme-black {
+            --brand-dark: #0a0a0a;
+            --brand-main: #171717;
+            --brand-light: #262626;
+            --brand-neon: #D4AF37; /* Replaces green neon with gold */
+            --brand-glow: #a3a3a3;
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--forest-black);
-            background-image: 
-                /* الإضاءة البيضاء العلوية التي تعطي انعكاس الزيتي */
-                radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-                linear-gradient(to bottom, var(--forest-deep), var(--forest-black));
-            background-attachment: fixed;
-            color: #e2e8f0;
+            background-color: var(--brand-dark);
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
             min-height: 100vh;
-            margin: 0;
-            transition: background 0.3s ease;
+            scroll-behavior: smooth;
+            transition: background-color 0.5s ease;
         }
 
-        .dark-mode {
-            --forest-black: #000000;
-            --forest-deep: #050505;
+        /* --- Background Animations --- */
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -2; transition: filter 0.5s ease; }
+        body.theme-black #particles-js { filter: grayscale(100%) opacity(0.3); }
+
+        .glow-orb {
+            position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1;
+            animation: float 10s infinite alternate ease-in-out; opacity: 0.4; pointer-events: none;
+            background: var(--brand-main); transition: background 0.5s ease;
+        }
+        .orb-1 { width: 400px; height: 400px; top: -10%; right: -10%; }
+        .orb-2 { width: 300px; height: 300px; bottom: -10%; left: -10%; animation-delay: -5s; }
+        .orb-3 { width: 250px; height: 250px; top: 40%; left: 40%; animation-duration: 15s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.2); }
         }
 
-        .madinah-font {
-            font-family: 'Amiri', serif;
-            line-height: 2.5;
-            font-size: 1.8rem;
-            text-align: justify;
-            text-align-last: center;
-        }
-
+        /* --- Glassmorphism --- */
         .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(var(--brand-main), 0.15); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.05);
             border-radius: 1.5rem;
+            transition: all 0.5s ease;
+        }
+        body.theme-black .glass-card { background: rgba(20, 20, 20, 0.6); }
+
+        .glass-header {
+            background: linear-gradient(to bottom, var(--brand-dark), rgba(0,0,0, 0.8));
+            backdrop-filter: blur(10px); border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.5s ease;
         }
 
-        .gold-glow {
-            color: var(--gold);
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        /* --- Navigation & Buttons --- */
+        .nav-btn {
+            padding: 0.6rem 1.2rem; border-radius: 1rem; transition: all 0.3s;
+            color: #a7f3d0; font-weight: 600; opacity: 0.6;
         }
-
+        body.theme-black .nav-btn { color: #d4d4d4; }
+        
+        .nav-btn.active {
+            opacity: 1; background: rgba(212, 175, 55, 0.15);
+            color: #FBE8A6; border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1);
+        }
         .btn-gold {
             background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-            color: black;
-            font-weight: 900;
+            color: #011a14; font-weight: 900; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .btn-gold:hover:not(:disabled) {
+            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- Quran Typography --- */
+        .quran-text {
+            font-family: 'Amiri Quran', serif !important; direction: rtl;
+            text-align: justify; text-align-last: center; line-height: 2.4; 
+            color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .ayah-wrapper { display: inline; position: relative; }
+        .ayah-number {
+            display: inline-block; margin: 0 6px; color: #D4AF37; 
+            font-size: 0.9em; position: relative; top: -2px;
+            font-family: 'Amiri Quran', serif !important;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .surah-frame {
+            position: relative; padding: 2rem 1rem; margin: 4rem auto 2rem;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.1), transparent);
+            border-top: 2px solid #D4AF37; border-bottom: 2px solid #D4AF37;
+            text-align: center; max-width: 90%;
+        }
+        .surah-frame::before, .surah-frame::after {
+            content: '❖'; position: absolute; color: var(--brand-neon); font-size: 1.5rem;
+            top: 50%; transform: translateY(-50%);
+        }
+        .surah-frame::before { right: -1rem; }
+        .surah-frame::after { left: -1rem; }
+
+        /* --- Custom Dropdowns (General Mushaf) --- */
+        .custom-dropdown-container { position: relative; width: 100%; z-index: 10; min-width: 150px;}
+        .custom-dropdown-selected {
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 0.75rem;
+            color: #FBE8A6; padding: 0.8rem 1.2rem; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s ease; font-weight: 700;
+        }
+        .custom-dropdown-selected:hover, .custom-dropdown-selected.active {
+            border-color: #D4AF37; box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+        .custom-dropdown-options {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: var(--brand-dark); border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+            z-index: 50; max-height: 250px; overflow-y: auto;
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
             transition: all 0.3s ease;
         }
-
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        .custom-dropdown-options.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .custom-dropdown-option {
+            padding: 0.8rem 1.2rem; color: #e5e7eb; cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem;
         }
-
-        .nav-btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 1rem;
-            transition: all 0.3s;
-            opacity: 0.5;
+        .custom-dropdown-option:hover {
+            background: rgba(212, 175, 55, 0.2); color: #FBE8A6;
+            padding-right: 1.8rem; border-right: 3px solid #D4AF37;
         }
+        .native-select-hidden { display: none; }
 
-        .nav-btn.active {
-            opacity: 1;
-            background: rgba(212, 175, 55, 0.15);
-            color: var(--gold);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        /* --- Auto Scroll Sidebar --- */
+        .auto-scroll-container {
+            position: fixed; left: 15px; top: 50%; transform: translateY(-50%);
+            height: 50vh; max-height: 350px; min-height: 200px; width: 45px;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 50;
+            display: flex; flex-direction: column; align-items: center;
+            transition: all 0.4s ease;
         }
+        @media (max-width: 768px) {
+            .auto-scroll-container {
+                left: 0; border-radius: 0 20px 20px 0; border-left: none;
+                opacity: 0.3; transform: translateY(-50%) translateX(-20px);
+            }
+            .auto-scroll-container.active-seeker {
+                opacity: 1; transform: translateY(-50%) translateX(0);
+                background: rgba(0, 0, 0, 0.9); border-color: #D4AF37;
+            }
+        }
+        .scroll-track { position: relative; width: 100%; flex-grow: 1; margin: 15px 0; cursor: pointer; }
+        .scroll-track::after {
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+            width: 2px; background: rgba(212, 175, 55, 0.3); transform: translateX(-50%);
+        }
+        .scroll-thumb {
+            position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+            width: 30px; height: 30px; background: linear-gradient(135deg, #D4AF37, #b8860b);
+            border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            cursor: grab; z-index: 2; display: flex; justify-content: center; align-items: center;
+        }
+        .scroll-thumb:active { cursor: grabbing; transform: translateX(-50%) scale(1.1); }
 
+        /* --- Utilities --- */
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(212, 175, 55, 0.1);
-            border-top: 3px solid var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            width: 40px; height: 40px; border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top: 3px solid #D4AF37; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .verse-num {
-            color: var(--gold);
-            font-family: sans-serif;
-            font-size: 1.1rem;
-            margin: 0 5px;
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-light); border-radius: 3px; }
+        
+        .toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95); color: #FBE8A6; padding: 12px 24px; 
+            border-radius: 30px; border: 1px solid #D4AF37; z-index: 2000; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8); font-weight: bold;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: max-content; max-width: 90vw; text-align: center;
         }
+        .toast.show { bottom: 30px; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <!-- Notifications Prompt -->
+    <!-- Particles -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <div id="particles-js"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <!-- Notifications Prompt Modal -->
     <div id="notif-prompt" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-md hidden">
-        <div class="glass-card p-8 max-w-md w-full text-center border-t-2 border-yellow-500">
-            <div class="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i data-lucide="bell-ring" class="w-10 h-10 text-yellow-500 animate-bounce"></i>
+        <div class="glass-card p-6 md:p-8 max-w-md w-[90%] text-center border-t-2 border-brand-gold">
+            <div class="w-20 h-20 bg-brand-main rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(212,175,55,0.4)] border border-brand-gold">
+                <i data-lucide="bell-ring" class="w-10 h-10 text-brand-goldLight animate-bounce"></i>
             </div>
-            <h2 class="text-2xl font-black mb-3">تفعيل التنبيهات</h2>
-            <p class="opacity-70 mb-8 leading-relaxed">سنقوم بتذكيرك بأورادك (4 مرات يومياً) لتثبيت الحفظ ونيل البركة.</p>
+            <h2 class="text-2xl font-black mb-3 text-brand-goldLight">تفعيل التنبيهات</h2>
+            <p class="opacity-80 mb-8 leading-relaxed text-sm">سنقوم بتذكيرك بأورادك (يومياً) لتثبيت الحفظ ونيل البركة والمداومة. يرجى إعطاء الصلاحية للمتصفح.</p>
             <div class="flex flex-col gap-3">
-                <button onclick="enableNotifications()" class="btn-gold py-4 rounded-2xl">تفعيل الآن</button>
-                <button onclick="hideNotifPrompt()" class="opacity-40 text-sm">تذكيري لاحقاً</button>
+                <button onclick="enableNotifications()" class="btn-gold py-3 rounded-2xl text-lg w-full">تفعيل الآن</button>
+                <button onclick="hideNotifPrompt()" class="opacity-50 text-sm hover:text-white mt-2 w-full py-2">تذكيري لاحقاً</button>
             </div>
         </div>
     </div>
 
-    <!-- Top Navigation -->
-    <header class="max-w-5xl mx-auto flex flex-col items-center mb-10 relative z-10">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-12 h-12 btn-gold rounded-2xl flex items-center justify-center">
-                <i data-lucide="book-open-check" class="w-7 h-7"></i>
+    <!-- Header & Navigation -->
+    <header class="glass-header shadow-lg sticky top-0 z-40 w-full px-4 py-3 mb-6">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Logo & Theme Toggle -->
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-brand-main flex items-center justify-center border border-brand-gold shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                        <i data-lucide="book-open-check" class="text-brand-goldLight w-6 h-6 md:w-7 md:h-7"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-l from-brand-goldLight to-[#fff]">يلا نختم</h1>
+                        <p class="text-[10px] text-brand-glow font-semibold opacity-80">الإصدار الملكي</p>
+                    </div>
+                </div>
+                <!-- Theme Toggle Button (Mobile visible here, Desktop right) -->
+                <button onclick="toggleTheme()" class="md:hidden w-10 h-10 rounded-full bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition">
+                    <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
+                </button>
             </div>
-            <h1 class="text-4xl font-black gold-glow tracking-tighter">يلا نختم</h1>
-        </div>
 
-        <nav class="w-full glass-card p-2 flex justify-between items-center gap-2 overflow-x-auto no-scrollbar">
-            <div class="flex gap-1">
-                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active">المجدول</button>
-                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn">المصحف العام</button>
-                <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn">المراجعة</button>
+            <!-- Tabs -->
+            <nav class="flex justify-start md:justify-center items-center gap-1 overflow-x-auto no-scrollbar w-full md:w-auto bg-brand-dark/40 p-1.5 rounded-2xl border border-brand-light/30">
+                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active whitespace-nowrap text-sm md:text-base"><i class="fa-solid fa-list-check ml-1"></i> المجدول</button>
+                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn whitespace-nowrap text-sm md:text-base"><i class="fa-solid fa-book-quran ml-1"></i> المصحف</button>
+                <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn whitespace-nowrap text-sm md:text-base"><i class="fa-solid fa-clock-rotate-left ml-1"></i> المراجعة</button>
+                <button onclick="showTab('settings')" id="tab-btn-settings" class="nav-btn whitespace-nowrap px-3"><i class="fa-solid fa-gear"></i></button>
+            </nav>
+
+            <!-- Tools: Font Size & Desktop Theme Toggle -->
+            <div class="hidden md:flex items-center gap-3">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-gold/30 flex items-center justify-center text-brand-goldLight hover:bg-brand-main transition" title="تبديل المظهر">
+                    <i id="theme-icon-desktop" class="fa-solid fa-moon"></i>
+                </button>
+                <div class="flex items-center gap-2 bg-brand-dark/50 p-1.5 rounded-xl border border-brand-light/30">
+                    <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
+                    <i class="fa-solid fa-font text-gray-400 text-sm"></i>
+                    <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-lg bg-brand-main hover:bg-brand-light text-brand-goldLight transition-colors flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
+                </div>
             </div>
-            <div class="flex gap-1">
-                <button onclick="toggleTheme()" class="p-3 opacity-60 hover:opacity-100 transition"><i data-lucide="moon" id="theme-ico"></i></button>
-                <button onclick="showTab('settings')" id="tab-btn-settings" class="p-3 opacity-60 hover:opacity-100 transition"><i data-lucide="settings"></i></button>
-            </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="max-w-5xl mx-auto relative z-10">
+    <!-- Auto Scroll Sidebar (Global for reading views) -->
+    <div class="auto-scroll-container py-4 hidden" id="auto-scroll-container" title="اسحب للأسفل للتمرير التلقائي">
+        <i class="fa-solid fa-angles-up text-brand-neon text-sm opacity-70"></i>
+        <div class="scroll-track" id="scroll-track">
+            <div class="scroll-thumb" id="scroll-thumb"><i class="fa-solid fa-grip-lines text-brand-dark text-xs"></i></div>
+        </div>
+        <i class="fa-solid fa-angles-down text-brand-neon text-sm opacity-70"></i>
+    </div>
 
-        <!-- 1. Schedule View -->
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-2 md:px-4 pb-32 max-w-5xl relative z-10">
+
+        <!-- ================= 1. TAB: SCHEDULE (المجدول) ================= -->
         <div id="view-schedule" class="view-content">
-            <div id="no-db-alert" class="glass-card p-16 text-center hidden">
-                <i data-lucide="layout-list" class="w-16 h-16 mx-auto mb-6 opacity-10"></i>
-                <h3 class="text-2xl font-bold mb-6">أهلاً بك.. لم تقم باختيار نظام بعد</h3>
-                <button onclick="showTab('settings')" class="btn-gold px-10 py-4 rounded-2xl">اختر نظام الحفظ وابدأ</button>
+            
+            <div id="no-db-alert" class="glass-card p-8 md:p-12 text-center hidden border-dashed border-2 border-brand-gold/50">
+                <i data-lucide="layout-list" class="w-16 h-16 mx-auto mb-6 text-brand-gold opacity-50"></i>
+                <h3 class="text-xl md:text-2xl font-bold mb-4 text-brand-goldLight">أهلاً بك.. لم تقم باختيار نظام الحفظ بعد</h3>
+                <p class="text-gray-300 mb-8 text-sm md:text-base">اختر النظام المناسب لك لنبدأ رحلة الحفظ والمراجعة ببركة الله.</p>
+                <button onclick="showTab('settings')" class="btn-gold px-8 md:px-10 py-3 rounded-xl text-base md:text-lg w-full md:w-auto">الذهاب للإعدادات والبدء</button>
             </div>
 
-            <div id="schedule-active" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+            <div id="schedule-active" class="grid grid-cols-1 lg:grid-cols-4 gap-6 hidden">
+                <!-- Sidebar Stats -->
                 <div class="lg:col-span-1 space-y-6">
-                    <div class="glass-card p-8 border-l-4 border-yellow-600">
-                        <span class="text-[10px] uppercase tracking-widest opacity-50 block mb-2" id="plan-label">نظام الصفحة</span>
-                        <h2 class="text-3xl font-black gold-glow mb-4" id="task-title">---</h2>
-                        <div class="bg-white/5 p-4 rounded-2xl mb-8">
-                            <p class="text-xs opacity-40 mb-1">التقدم الحالي</p>
+                    <div class="glass-card p-5 md:p-6 border-r-4 border-brand-gold text-center relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-brand-main opacity-20"><i class="fa-solid fa-shield-halved text-9xl"></i></div>
+                        <span class="text-xs text-brand-neon font-bold uppercase tracking-widest block mb-2 relative z-10" id="plan-label">النظام الحالي</span>
+                        <h2 class="text-xl md:text-2xl font-black text-brand-goldLight mb-6 relative z-10" id="task-title">---</h2>
+                        
+                        <div class="bg-brand-dark/60 p-4 rounded-xl mb-6 relative z-10 border border-brand-light/30">
+                            <p class="text-xs text-gray-400 mb-2">نسبة الإنجاز</p>
                             <div class="flex items-center gap-3">
-                                <div class="flex-grow h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div id="progress-bar" class="h-full btn-gold w-[5%] transition-all duration-1000"></div>
+                                <div class="flex-grow h-2 bg-brand-dark rounded-full overflow-hidden border border-brand-main">
+                                    <div id="progress-bar" class="h-full bg-gradient-to-l from-brand-gold to-brand-neon w-[5%] transition-all duration-1000"></div>
                                 </div>
-                                <span class="text-xs font-bold" id="progress-text">0%</span>
+                                <span class="text-xs font-bold text-brand-goldLight" id="progress-text">0%</span>
                             </div>
                         </div>
-                        <button onclick="markDone()" class="w-full btn-gold py-5 rounded-2xl text-xl flex items-center justify-center gap-3 active:scale-95">
-                            <i data-lucide="check-circle"></i> أتممت الحفظ
-                        </button>
-                    </div>
-                    <div class="glass-card p-6 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] opacity-40 uppercase">إجمالي المحفوظ</p>
-                            <p class="text-2xl font-black gold-glow" id="stat-total">0</p>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2 relative z-10">
+                            <button onclick="markDone()" class="flex-grow btn-gold py-3 md:py-4 rounded-xl text-base md:text-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check-circle"></i> أتممت الورد
+                            </button>
+                            <!-- New Go Back Button -->
+                            <button onclick="goBackWird()" id="btn-go-back" class="w-12 md:w-14 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-colors" title="التراجع للورد السابق">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
                         </div>
-                        <i data-lucide="award" class="w-10 h-10 opacity-20"></i>
+                    </div>
+
+                    <div class="glass-card p-5 md:p-6 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-brand-glow mb-1">إجمالي المحفوظ</p>
+                            <p class="text-2xl md:text-3xl font-black text-brand-goldLight" id="stat-total">0</p>
+                        </div>
+                        <i class="fa-solid fa-award text-3xl md:text-4xl text-brand-gold opacity-50"></i>
                     </div>
                 </div>
-                <div class="lg:col-span-2 glass-card p-8 md:p-12 min-h-[60vh]">
-                    <div id="quran-render" class="madinah-font"></div>
+
+                <!-- Reading Area -->
+                <div class="lg:col-span-3 glass-card p-4 md:p-10 min-h-[60vh] relative overflow-hidden">
+                    <div id="schedule-loading" class="text-center py-20 hidden">
+                        <div class="spinner"></div>
+                        <p class="text-brand-goldLight mt-4 font-bold text-sm md:text-base">جاري جلب الورد المخصص لك...</p>
+                    </div>
+                    <div id="quran-render-schedule" class="quran-text transition-all duration-300"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. General Mushaf View -->
+        <!-- ================= 2. TAB: GENERAL (المصحف العام) ================= -->
         <div id="view-general" class="view-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="md:col-span-1 glass-card p-4 h-[70vh] flex flex-col">
-                    <div class="relative mb-4">
-                        <i data-lucide="search" class="absolute right-3 top-3 w-4 h-4 opacity-40"></i>
-                        <input type="text" id="srch" placeholder="بحث عن سورة..." class="w-full bg-black/40 border border-white/5 rounded-xl py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-yellow-600">
+            <div class="glass-card p-4 md:p-10 min-h-[70vh]">
+                
+                <!-- Dropdowns Header -->
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-8 bg-brand-dark/40 p-4 rounded-2xl border border-brand-light/30">
+                    <div class="w-full md:w-64">
+                        <label class="text-xs text-brand-glow mb-1 block pl-2">البحث برقم الجزء</label>
+                        <select id="gen-juz-select" class="native-select-hidden"><option value="" disabled selected>اختر الجزء...</option></select>
                     </div>
-                    <div id="s-list" class="overflow-y-auto space-y-1 flex-grow no-scrollbar"></div>
+                    <div class="hidden md:block w-px h-10 bg-brand-light/30"></div>
+                    <div class="w-full md:w-72">
+                        <label class="text-xs text-brand-glow mb-1 block pl-2">البحث باسم السورة</label>
+                        <select id="gen-surah-select" class="native-select-hidden"><option value="" disabled selected>اختر السورة...</option></select>
+                    </div>
                 </div>
-                <div class="md:col-span-3 glass-card p-8 md:p-12 h-[70vh] overflow-y-auto no-scrollbar relative">
-                    <h2 id="g-title" class="text-3xl font-black text-center mb-10 gold-glow">المصحف الشريف</h2>
-                    <div id="g-render" class="madinah-font"></div>
+
+                <div id="general-loading" class="text-center py-20 hidden"><div class="spinner"></div></div>
+
+                <!-- Content Area -->
+                <div id="quran-render-general" class="quran-text transition-all duration-300">
+                    <div class="text-center py-20 opacity-50">
+                        <i class="fa-solid fa-book-open-reader text-5xl md:text-6xl mb-4 text-brand-neon"></i>
+                        <p class="text-lg md:text-xl">الرجاء اختيار سورة أو جزء للبدء في القراءة</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. Review View -->
+        <!-- ================= 3. TAB: REVIEW (المراجعة) ================= -->
         <div id="view-review" class="view-content hidden">
-            <div class="glass-card p-8 mb-8 flex items-center justify-between">
+            <div class="glass-card p-5 md:p-6 mb-8 flex flex-col md:flex-row items-center justify-between border-r-4 border-brand-gold gap-4 text-center md:text-right">
                 <div>
-                    <h2 class="text-3xl font-black gold-glow">سجل المراجعة</h2>
-                    <p class="opacity-50 text-sm mt-1">كل ما أتممت حفظه يتم أرشفته هنا تلقائياً.</p>
+                    <h2 class="text-xl md:text-2xl font-black text-brand-goldLight">سجل المراجعة والأرشيف</h2>
+                    <p class="text-brand-glow text-xs md:text-sm mt-1">اضغط على أي ورد قمت بحفظه سابقاً لمراجعته وتثبيته.</p>
                 </div>
-                <i data-lucide="history" class="w-12 h-12 opacity-10"></i>
+                <i class="fa-solid fa-history text-3xl md:text-4xl text-brand-main opacity-50 hidden md:block"></i>
             </div>
-            <div id="rev-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-            <div id="rev-full-view" class="glass-card p-8 md:p-12 mt-8 hidden relative">
-                <button onclick="this.parentElement.classList.add('hidden')" class="absolute top-4 left-4 p-2 opacity-30 hover:opacity-100"><i data-lucide="x"></i></button>
-                <div id="rev-render" class="madinah-font"></div>
+            
+            <div id="rev-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
+            
+            <!-- Full View Modal for Review -->
+            <div id="rev-full-view" class="glass-card p-4 md:p-10 mt-8 hidden relative border-2 border-brand-neon">
+                <button onclick="closeReview()" class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors z-20">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+                <div id="review-loading" class="text-center py-20 hidden"><div class="spinner"></div></div>
+                <div id="quran-render-review" class="quran-text transition-all duration-300 mt-6 md:mt-0"></div>
             </div>
         </div>
 
-        <!-- 4. Settings View -->
+        <!-- ================= 4. TAB: SETTINGS (الإعدادات) ================= -->
         <div id="view-settings" class="view-content hidden">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black gold-glow">اختر نظامك الجديد</h2>
-                <p class="opacity-50 mt-2">تغيير النظام سيؤدي لمسح التقدم الحالي وتعيين نظام جديد.</p>
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mb-2">أنظمة الحفظ والمراجعة</h2>
+                <p class="text-brand-glow text-xs md:text-sm">تغيير النظام سيؤدي لتصفير التقدم الحالي لتبدأ رحلة جديدة.</p>
             </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Plan A -->
-                <div class="glass-card p-8 border-t-4 border-yellow-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('page')">
-                    <h3 class="text-2xl font-black mb-4">صفحة يومياً</h3>
-                    <p class="text-sm opacity-60 leading-relaxed mb-6">حفظ صفحة كاملة يومياً (604 ورد). الالتزام يبدأ بعد صلاة الفجر للبركة القصوى.</p>
-                    <div class="text-xs font-bold gold-glow uppercase">تفعيل النظام</div>
+                <div class="glass-card p-6 md:p-8 border-t-4 border-brand-gold hover:bg-brand-light/20 transition cursor-pointer text-center group" onclick="initPlan('page')">
+                    <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-4 border border-brand-gold group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-file-lines text-xl md:text-2xl text-brand-goldLight"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-black mb-3 text-white">صفحة يومياً</h3>
+                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed mb-6">حفظ وجه كامل (صفحة) يومياً. المسار الكلاسيكي (604 ورد). يفضل الالتزام به بعد صلاة الفجر.</p>
+                    <div class="text-xs md:text-sm font-bold text-brand-gold bg-brand-gold/10 py-2 rounded-lg">تفعيل هذا النظام</div>
                 </div>
                 <!-- Plan B -->
-                <div class="glass-card p-8 border-t-4 border-emerald-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('amma')">
-                    <h3 class="text-2xl font-black mb-4">جزء عمّ</h3>
-                    <p class="text-sm opacity-60 leading-relaxed mb-6">من سورة الناس صعوداً. مثالي لمن يريد البدء بقصار السور وتثبيتها أولاً.</p>
-                    <div class="text-xs font-bold text-emerald-500 uppercase">تفعيل النظام</div>
+                <div class="glass-card p-6 md:p-8 border-t-4 border-brand-neon hover:bg-brand-light/20 transition cursor-pointer text-center group" onclick="initPlan('amma')">
+                    <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-4 border border-brand-neon group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-child-reaching text-xl md:text-2xl text-brand-neon"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-black mb-3 text-white">جزء عمّ (سور)</h3>
+                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed mb-6">يبدأ من سورة الناس صعوداً (سورة بسورة). مثالي للبدء بقصار السور وتثبيتها للصلاة.</p>
+                    <div class="text-xs md:text-sm font-bold text-brand-neon bg-brand-neon/10 py-2 rounded-lg">تفعيل هذا النظام</div>
                 </div>
                 <!-- Plan C -->
-                <div class="glass-card p-8 border-t-4 border-blue-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('five')">
-                    <h3 class="text-2xl font-black mb-4">5 آيات فقط</h3>
-                    <p class="text-sm opacity-60 leading-relaxed mb-6">حفظ 5 آيات في كل ورد. نظام مريح يضمن الاستمرارية وعدم الانقطاع.</p>
-                    <div class="text-xs font-bold text-blue-500 uppercase">تفعيل النظام</div>
+                <div class="glass-card p-6 md:p-8 border-t-4 border-[#60a5fa] hover:bg-brand-light/20 transition cursor-pointer text-center group" onclick="initPlan('five')">
+                    <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-4 border border-[#60a5fa] group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-hand text-xl md:text-2xl text-[#60a5fa]"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-black mb-3 text-white">نظام الـ 5 آيات</h3>
+                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed mb-6">قليل دائم خير من كثير منقطع. مناسب جداً للمبتدئين ولضمان الاستمرارية وعدم الانقطاع.</p>
+                    <div class="text-xs md:text-sm font-bold text-[#60a5fa] bg-[#60a5fa]/10 py-2 rounded-lg">تفعيل هذا النظام</div>
                 </div>
             </div>
-            <div class="mt-20 text-center border-t border-white/5 pt-10">
-                <button onclick="hardReset()" class="text-red-500/50 hover:text-red-500 text-xs flex items-center gap-2 mx-auto">
-                    <i data-lucide="trash-2" class="w-3 h-3"></i> مسح كافة البيانات وإعادة الضبط
+
+            <div class="mt-12 md:mt-16 text-center border-t border-brand-light/20 pt-8">
+                <button onclick="hardReset()" class="text-red-400/80 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 px-6 py-3 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 mx-auto transition-colors">
+                    <i class="fa-solid fa-trash-can"></i> مسح جميع البيانات السابقة وإعادة الضبط (لا يمكن التراجع)
                 </button>
             </div>
         </div>
 
     </main>
 
-    <div id="toast" class="fixed bottom-10 right-10 btn-gold px-6 py-3 rounded-2xl shadow-2xl z-[2000] translate-y-32 opacity-0 transition-all duration-500 font-bold"></div>
+    <div id="toast" class="toast">رسالة</div>
 
+    <!-- Application Script -->
     <script>
-        lucide.createIcons();
-        let qMeta = [];
+        // --- Core Variables & Initialization ---
+        let currentFontSize = window.innerWidth < 768 ? 28 : 44; // Adjusted for mobile initially
+        const renderContainers = [
+            document.getElementById('quran-render-schedule'),
+            document.getElementById('quran-render-general'),
+            document.getElementById('quran-render-review')
+        ];
+        
+        function updateFontSizes() {
+            renderContainers.forEach(c => { if(c) c.style.fontSize = `${currentFontSize}px`; });
+        }
+        updateFontSizes();
 
-        // --- Database Logic ---
+        function changeFontSize(step) {
+            const newSize = currentFontSize + (step * 4);
+            if (newSize >= 16 && newSize <= 80) { // Allowed smaller for tiny screens
+                currentFontSize = newSize;
+                updateFontSizes();
+            }
+        }
+
+        // --- Theme Management ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('nakhtem_theme');
+            if (savedTheme === 'black') {
+                document.body.classList.add('theme-black');
+            }
+            updateThemeIcons();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('theme-black');
+            const isBlack = document.body.classList.contains('theme-black');
+            localStorage.setItem('nakhtem_theme', isBlack ? 'black' : 'green');
+            updateThemeIcons();
+            showToast(isBlack ? "تم تفعيل الوضع الملكي الأسود" : "تم تفعيل الوضع الملكي الزيتي");
+        }
+
+        function updateThemeIcons() {
+            const isBlack = document.body.classList.contains('theme-black');
+            const iconClass = isBlack ? 'fa-sun' : 'fa-moon';
+            document.getElementById('theme-icon-desktop').className = `fa-solid ${iconClass}`;
+            document.getElementById('theme-icon-mobile').className = `fa-solid ${iconClass}`;
+        }
+
+        // --- Database Logic (LocalStorage) ---
         const DB = {
             get: () => JSON.parse(localStorage.getItem('nakhtem_core')) || null,
             save: (data) => localStorage.setItem('nakhtem_core', JSON.stringify(data))
@@ -265,41 +538,75 @@
         function initPlan(type) {
             const data = {
                 plan: type,
-                current: type === 'amma' ? 114 : 1,
+                current: type === 'amma' ? 114 : 1, // amma starts from Nas (114), others from 1
                 history: [],
                 joined: new Date().toISOString()
             };
             DB.save(data);
             showToast("تم تفعيل النظام بنجاح.. بالتوفيق!");
-            setTimeout(() => showTab('schedule'), 500); // إظهار التبويب فوراً بدون لودر الصفحة
+            setTimeout(() => showTab('schedule'), 500);
         }
 
         function hardReset() {
-            if(confirm("هل أنت متأكد؟ سيتم حذف كل شيء.")) {
-                localStorage.clear();
+            if(confirm("هل أنت متأكد؟ سيتم حذف تقدمك بالكامل ولن تتمكن من استرجاعه.")) {
+                localStorage.removeItem('nakhtem_core');
                 location.reload();
             }
         }
 
-        // --- Notifications ---
+        // --- Notifications Engine (Background Check) ---
         function enableNotifications() {
             if ("Notification" in window) {
                 Notification.requestPermission().then(p => {
                     if (p === 'granted') {
                         localStorage.setItem('notifs', 'on');
                         hideNotifPrompt();
-                        new Notification("يلا نختم", { body: "تم تفعيل التنبيهات.. سنرافقك في رحلة الحفظ." });
+                        try { new Notification("يلا نختم", { body: "تم تفعيل التنبيهات بنجاح! سنرافقك في رحلتك." }); } catch(e){}
+                        startNotificationEngine();
+                    } else {
+                        showToast("تم رفض الصلاحية من قبل المتصفح.");
                     }
                 });
+            } else {
+                showToast("متصفحك لا يدعم الإشعارات.");
             }
         }
-
+        
         function hideNotifPrompt() {
             document.getElementById('notif-prompt').classList.add('hidden');
             localStorage.setItem('notif_seen', 'true');
         }
 
-        // --- UI Switching ---
+        function startNotificationEngine() {
+            if (Notification.permission !== "granted" || localStorage.getItem('notifs') !== 'on') return;
+            
+            // Check every minute if it's time to notify
+            setInterval(() => {
+                const now = new Date();
+                const hours = now.getHours();
+                const mins = now.getMinutes();
+                
+                // Set of hours to trigger (e.g. 5 AM, 1 PM, 4 PM, 8 PM)
+                const targetTimes = [5, 13, 16, 20];
+                
+                if (targetTimes.includes(hours) && mins === 0) {
+                    const lastFired = localStorage.getItem('last_notif_time');
+                    const currentTimeStr = `${now.toDateString()}-${hours}`; // Unique per hour per day
+                    
+                    if (lastFired !== currentTimeStr) {
+                        try {
+                            new Notification("يلا نختم - حان وقت وردك!", {
+                                body: "لا تنسَ قراءة وردك القرآني لهذا الوقت. افتح التطبيق الآن لتسجيل إنجازك.",
+                                icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png"
+                            });
+                        } catch(e){}
+                        localStorage.setItem('last_notif_time', currentTimeStr);
+                    }
+                }
+            }, 60000); // Run check every 60 seconds
+        }
+
+        // --- UI & Tabs Management ---
         function showTab(id) {
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${id}`).classList.remove('hidden');
@@ -308,13 +615,95 @@
             const activeBtn = document.getElementById(`tab-btn-${id}`);
             if(activeBtn) activeBtn.classList.add('active');
 
+            const scroller = document.getElementById('auto-scroll-container');
+            if(id === 'schedule' || id === 'general' || id === 'review') {
+                scroller.classList.remove('hidden');
+            } else {
+                scroller.classList.add('hidden');
+            }
+
             if(id === 'schedule') renderSchedule();
-            if(id === 'general') fetchGeneral();
-            if(id === 'review') renderReview();
-            lucide.createIcons();
+            if(id === 'general') initGeneralTab();
+            if(id === 'review') renderReviewGrid();
         }
 
-        // --- Schedule Logic ---
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // --- API & Universal Quran Rendering ---
+        async function fetchQuranData(url) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("API Error");
+                const json = await res.json();
+                return json.data;
+            } catch (e) {
+                console.error("Fetch error:", e);
+                return null;
+            }
+        }
+
+        function toArabicNumerals(num) {
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return num.toString().split('').map(digit => arabicNumbers[digit]).join('');
+        }
+
+        function generateQuranHTML(ayahs) {
+            let html = '';
+            let currentSurahNumber = 0;
+
+            ayahs.forEach((ayah) => {
+                if (ayah.surah && ayah.surah.number !== currentSurahNumber) {
+                    currentSurahNumber = ayah.surah.number;
+                    const revTypeAr = ayah.surah.revelationType === 'Meccan' ? 'مكية' : 'مدنية';
+                    
+                    html += `
+                        <div class="surah-frame">
+                            <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-6">
+                                <div class="flex flex-col items-center order-2 md:order-1">
+                                    <span class="text-[10px] text-brand-glow font-sans">آياتها</span>
+                                    <span class="text-lg md:text-xl text-brand-goldLight">${toArabicNumerals(ayah.surah.numberOfAyahs)}</span>
+                                </div>
+                                <h2 class="text-3xl md:text-5xl font-bold text-white text-center order-1 md:order-2 mb-2 md:mb-0" style="font-family: 'Amiri Quran', serif !important;">
+                                    سُورَةُ ${ayah.surah.name.replace('سُورَةُ ', '').replace('سورة ', '')}
+                                </h2>
+                                <div class="flex flex-col items-center order-3">
+                                    <span class="text-[10px] text-brand-glow font-sans">ترتيبها</span>
+                                    <span class="text-lg md:text-xl text-brand-goldLight">${toArabicNumerals(ayah.surah.number)}</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 inline-block bg-brand-dark px-4 py-1 rounded-full border border-brand-neon/30 text-brand-goldLight text-xs font-sans">
+                                <i class="fa-solid ${revTypeAr === 'مكية' ? 'fa-kaaba' : 'fa-mosque'} mr-1"></i> ${revTypeAr}
+                            </div>
+                        </div>
+                    `;
+
+                    if (currentSurahNumber !== 1 && currentSurahNumber !== 9) {
+                        html += `<div class="text-center mb-8 md:mb-10 text-2xl md:text-4xl text-brand-goldLight" style="font-family: 'Amiri Quran', serif !important;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
+                    }
+                }
+
+                let text = ayah.text;
+                if (currentSurahNumber !== 1 && ayah.numberInSurah === 1) {
+                    text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ', '').replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ', '');
+                }
+
+                html += `
+                    <span class="ayah-wrapper">
+                        ${text.trim()} <span class="ayah-number">﴿${toArabicNumerals(ayah.numberInSurah)}﴾</span>
+                    </span>
+                `;
+            });
+            
+            return html;
+        }
+
+
+        // --- TAB 1: Schedule Logic ---
         async function renderSchedule() {
             const data = DB.get();
             if(!data) {
@@ -325,157 +714,311 @@
             document.getElementById('no-db-alert').classList.add('hidden');
             document.getElementById('schedule-active').classList.remove('hidden');
             
-            // UI Stats
+            // Stats
             document.getElementById('stat-total').innerText = data.history.length;
-            document.getElementById('plan-label').innerText = `نظام: ${data.plan === 'page' ? 'الصفحة الواحدة' : (data.plan === 'amma' ? 'جزء عمّ' : 'الخمس آيات')}`;
+            let planName = data.plan === 'page' ? 'صفحة يومياً' : (data.plan === 'amma' ? 'جزء عمّ' : '5 آيات');
+            document.getElementById('plan-label').innerText = `نظام: ${planName}`;
             
-            const render = document.getElementById('quran-render');
-            render.innerHTML = '<div class="flex justify-center py-20"><div class="spinner"></div></div>';
+            // Check Go Back button state
+            const goBackBtn = document.getElementById('btn-go-back');
+            if (data.history.length === 0) {
+                goBackBtn.disabled = true;
+                goBackBtn.classList.add('opacity-30', 'cursor-not-allowed');
+            } else {
+                goBackBtn.disabled = false;
+                goBackBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+            }
 
-            try {
-                let url = '';
-                if(data.plan === 'page') {
-                    document.getElementById('task-title').innerText = `الصفحة ${data.current}`;
-                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?page_number=${data.current}`;
-                } else if(data.plan === 'amma') {
-                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${data.current}`;
-                } else {
-                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=2`;
-                }
+            // Progress Bar
+            let totalSteps = data.plan === 'page' ? 604 : (data.plan === 'amma' ? 37 : 1248);
+            const prog = Math.min(100, (data.history.length / totalSteps) * 100);
+            document.getElementById('progress-bar').style.width = `${Math.max(2, prog)}%`;
+            document.getElementById('progress-text').innerText = `${Math.floor(prog)}%`;
 
-                const res = await fetch(url);
-                const json = await res.json();
-                
+            // Setup Render
+            const renderBox = document.getElementById('quran-render-schedule');
+            const loader = document.getElementById('schedule-loading');
+            renderBox.innerHTML = ''; loader.classList.remove('hidden');
+
+            let url = '';
+            if(data.plan === 'page') {
+                document.getElementById('task-title').innerText = `الورد: صفحة ${data.current}`;
+                url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
+            } else if(data.plan === 'amma') {
+                url = `https://api.alquran.cloud/v1/surah/${data.current}/quran-uthmani`;
+            } else {
+                document.getElementById('task-title').innerText = `الورد: صفحة ${data.current}`;
+                url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
+            }
+
+            const apiData = await fetchQuranData(url);
+            loader.classList.add('hidden');
+
+            if(apiData) {
+                let ayahs = apiData.ayahs || [];
                 if(data.plan === 'amma') {
-                    const chRes = await fetch(`https://api.quran.com/api/v4/chapters/${data.current}?language=ar`);
-                    const chData = await chRes.json();
-                    document.getElementById('task-title').innerText = chData.chapter.name_arabic;
+                     document.getElementById('task-title').innerText = `سورة ${apiData.name.replace('سُورَةُ ', '')}`;
+                     const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
+                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
                 }
-
-                let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
-                json.verses.forEach(v => {
-                    html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
-                });
-                render.innerHTML = html;
                 
-                // Progress Bar Sim
-                const prog = (data.history.length / 604) * 100;
-                document.getElementById('progress-bar').style.width = `${Math.max(5, prog)}%`;
-                document.getElementById('progress-text').innerText = `${Math.floor(prog)}%`;
-
-            } catch(e) {
-                render.innerHTML = '<p class="text-center opacity-40">تأكد من اتصالك بالإنترنت لجلب الآيات</p>';
+                renderBox.innerHTML = generateQuranHTML(ayahs) + `<div class="text-center mt-12 md:mt-16 pt-8 border-t border-brand-light/30"><p class="text-brand-gold drop-shadow-md" style="font-family: 'Amiri Quran', serif !important; font-size: 1.5rem md:font-size: 2rem;">صَدَقَ ٱللَّهُ ٱلْعَظِيمُ</p></div>`;
+            } else {
+                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة. يرجى المحاولة لاحقاً.</p>';
             }
         }
 
         function markDone() {
             const data = DB.get();
-            data.history.push({ step: data.current, type: data.plan, date: new Date() });
+            data.history.push({ step: data.current, type: data.plan, date: new Date().toISOString() });
             
-            if(data.plan === 'page') data.current++;
-            else if(data.plan === 'amma') data.current--;
-            else data.current++; // logic for 5 ayat can be expanded
+            if(data.plan === 'page' || data.plan === 'five') data.current++;
+            else if(data.plan === 'amma') data.current--; // Amma goes down from 114 to 78
 
             DB.save(data);
-            showToast("مبارك! تم تسجيل الحفظ بنجاح.");
+            showToast("مبارك! تم تسجيل إنجازك بنجاح.");
             renderSchedule();
         }
 
-        // --- General Mushaf ---
-        async function fetchGeneral() {
-            if(qMeta.length > 0) return;
-            const res = await fetch('https://api.quran.com/api/v4/chapters?language=ar');
-            const data = await res.json();
-            qMeta = data.chapters;
-            renderSList(qMeta);
+        function goBackWird() {
+            const data = DB.get();
+            if (!data || data.history.length === 0) return;
+            
+            // Pop the last saved history entry
+            const lastEntry = data.history.pop();
+            // Revert current pointer to the step we just un-did
+            data.current = lastEntry.step;
+            
+            DB.save(data);
+            showToast("تم التراجع إلى الورد السابق");
+            renderSchedule();
         }
 
-        function renderSList(list) {
-            const container = document.getElementById('s-list');
-            container.innerHTML = '';
-            list.forEach(s => {
-                const b = document.createElement('button');
-                b.className = "w-full text-right p-3 rounded-xl hover:bg-white/5 transition flex justify-between items-center border-b border-white/5";
-                b.innerHTML = `<span class="opacity-20 text-xs font-mono">${s.id}</span><span class="font-bold">${s.name_arabic}</span>`;
-                b.onclick = () => loadSContent(s.id, s.name_arabic);
-                container.appendChild(b);
+        // --- TAB 2: General Mushaf Logic ---
+        let generalListsLoaded = false;
+        async function initGeneralTab() {
+            if(generalListsLoaded) return;
+            
+            const juzSelect = document.getElementById('gen-juz-select');
+            for (let i = 1; i <= 30; i++) {
+                const option = document.createElement('option');
+                option.value = i; option.textContent = `الجزء ${toArabicNumerals(i)}`;
+                juzSelect.appendChild(option);
+            }
+
+            const data = await fetchQuranData('https://api.alquran.cloud/v1/surah');
+            if(data) {
+                const surahSelect = document.getElementById('gen-surah-select');
+                data.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah.number;
+                    option.textContent = `${surah.number}. سورة ${surah.name.replace('سُورَةُ ', '')}`;
+                    surahSelect.appendChild(option);
+                });
+
+                buildCustomDropdown('gen-surah-select', async (val) => {
+                    const juzDisp = document.querySelector('#gen-juz-select').nextElementSibling.querySelector('span');
+                    juzDisp.innerText = 'اختر الجزء...'; juzDisp.className = 'truncate';
+                    await loadGeneralContent(`https://api.alquran.cloud/v1/surah/${val}/quran-uthmani`, 'surah');
+                });
+
+                buildCustomDropdown('gen-juz-select', async (val) => {
+                    const surahDisp = document.querySelector('#gen-surah-select').nextElementSibling.querySelector('span');
+                    surahDisp.innerText = 'اختر السورة...'; surahDisp.className = 'truncate';
+                    await loadGeneralContent(`https://api.alquran.cloud/v1/juz/${val}/quran-uthmani`, 'juz');
+                });
+                
+                generalListsLoaded = true;
+            }
+        }
+
+        async function loadGeneralContent(url, type) {
+            const renderBox = document.getElementById('quran-render-general');
+            const loader = document.getElementById('general-loading');
+            renderBox.innerHTML = ''; loader.classList.remove('hidden');
+            resetAutoScroll();
+
+            const apiData = await fetchQuranData(url);
+            loader.classList.add('hidden');
+
+            if(apiData) {
+                let ayahs = apiData.ayahs || [];
+                if(type === 'surah') {
+                     const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
+                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+                }
+                renderBox.innerHTML = generateQuranHTML(ayahs) + `<div class="text-center mt-12 md:mt-16 pt-8 border-t border-brand-light/30"><p class="text-brand-gold drop-shadow-md" style="font-family: 'Amiri Quran', serif !important; font-size: 1.5rem md:font-size: 2rem;">صَدَقَ ٱللَّهُ ٱلْعَظِيمُ</p></div>`;
+            } else {
+                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة.</p>';
+            }
+        }
+
+        // --- Custom Dropdown Logic ---
+        function buildCustomDropdown(selectId, onChangeCallback) {
+            const select = document.getElementById(selectId);
+            const existingContainer = select.nextElementSibling;
+            if (existingContainer && existingContainer.classList.contains('custom-dropdown-container')) existingContainer.remove();
+
+            const container = document.createElement('div'); container.className = 'custom-dropdown-container';
+            select.parentNode.insertBefore(container, select.nextSibling);
+            
+            const selectedDisplay = document.createElement('div'); selectedDisplay.className = 'custom-dropdown-selected text-sm md:text-base';
+            const selectedText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
+            selectedDisplay.innerHTML = `<span class="truncate">${selectedText}</span> <i class="fa-solid fa-chevron-down text-brand-gold text-xs transition-transform duration-300 ml-2"></i>`;
+            container.appendChild(selectedDisplay);
+            
+            const optionsList = document.createElement('div'); optionsList.className = 'custom-dropdown-options no-scrollbar';
+            
+            Array.from(select.options).forEach((option, index) => {
+                if (index === 0 && option.disabled) return;
+                const optionDiv = document.createElement('div'); optionDiv.className = 'custom-dropdown-option'; optionDiv.innerText = option.text;
+                
+                optionDiv.addEventListener('click', () => {
+                    select.value = option.value;
+                    const spanText = selectedDisplay.querySelector('span');
+                    spanText.innerText = option.text; spanText.className = 'truncate font-bold text-brand-goldLight';
+                    optionsList.classList.remove('open'); selectedDisplay.classList.remove('active');
+                    selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)';
+                    container.style.zIndex = '10';
+                    select.dispatchEvent(new Event('change'));
+                    if(onChangeCallback) onChangeCallback(option.value);
+                });
+                optionsList.appendChild(optionDiv);
+            });
+            container.appendChild(optionsList);
+            
+            selectedDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-dropdown-options').forEach(list => { if (list !== optionsList) list.classList.remove('open'); });
+                const isOpen = optionsList.classList.contains('open');
+                if (isOpen) {
+                    optionsList.classList.remove('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)'; container.style.zIndex = '10';
+                } else {
+                    optionsList.classList.add('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(180deg)'; container.style.zIndex = '50';
+                }
             });
         }
+        document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown-options').forEach(list => list.classList.remove('open')); });
 
-        async function loadSContent(id, name) {
-            document.getElementById('g-title').innerText = name;
-            const render = document.getElementById('g-render');
-            render.innerHTML = '<div class="flex justify-center py-20"><div class="spinner"></div></div>';
-            const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
-            const data = await res.json();
-            let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
-            data.verses.forEach(v => {
-                html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
-            });
-            render.innerHTML = html;
-        }
-
-        document.getElementById('srch').oninput = (e) => {
-            renderSList(qMeta.filter(s => s.name_arabic.includes(e.target.value)));
-        };
-
-        // --- Review Tab ---
-        function renderReview() {
+        // --- TAB 3: Review Logic ---
+        function renderReviewGrid() {
             const data = DB.get();
             const grid = document.getElementById('rev-grid');
             grid.innerHTML = '';
+            document.getElementById('rev-full-view').classList.add('hidden');
+
             if(!data || data.history.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center opacity-20 py-20">لا توجد أوراد محفوظة للمراجعة بعد</p>';
+                grid.innerHTML = '<div class="col-span-full text-center opacity-40 py-10 md:py-20"><i class="fa-solid fa-box-open text-3xl md:text-4xl mb-3 block"></i>لا توجد أوراد محفوظة في الأرشيف بعد</div>';
                 return;
             }
+
             [...data.history].reverse().forEach(h => {
+                const date = new Date(h.date).toLocaleDateString('ar-EG');
+                const label = h.type === 'page' ? `صفحة ${h.step}` : (h.type === 'amma' ? `سورة رقم ${h.step}` : `صفحة ${h.step}`);
+                
                 const card = document.createElement('div');
-                card.className = "glass-card p-4 text-center cursor-pointer hover:border-yellow-500/50 transition";
+                card.className = "bg-brand-dark/50 border border-brand-light/30 p-3 md:p-4 rounded-xl text-center cursor-pointer hover:border-brand-neon hover:bg-brand-main/40 transition-all group shadow-sm";
                 card.innerHTML = `
-                    <p class="text-[10px] opacity-30 mb-1">${new Date(h.date).toLocaleDateString('ar-EG')}</p>
-                    <h4 class="font-bold gold-glow">${h.type === 'page' ? 'صفحة ' + h.step : 'سورة رقم ' + h.step}</h4>
+                    <p class="text-[9px] md:text-[10px] text-brand-glow mb-1 md:mb-2 font-mono">${date}</p>
+                    <h4 class="font-bold text-white text-sm md:text-base group-hover:text-brand-goldLight transition-colors"><i class="fa-solid fa-book-open text-xs md:text-sm ml-1 opacity-50"></i> ${label}</h4>
                 `;
-                card.onclick = () => showFullReview(h.step, h.type);
+                card.onclick = () => openReviewItem(h.step, h.type);
                 grid.appendChild(card);
             });
         }
 
-        async function showFullReview(step, type) {
+        async function openReviewItem(step, type) {
             const full = document.getElementById('rev-full-view');
-            const render = document.getElementById('rev-render');
-            full.classList.remove('hidden');
-            render.innerHTML = '<div class="spinner mx-auto"></div>';
+            const render = document.getElementById('quran-render-review');
+            const loader = document.getElementById('review-loading');
             
-            let url = type === 'page' ? `https://api.quran.com/api/v4/quran/verses/uthmani?page_number=${step}` : `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${step}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
-            data.verses.forEach(v => {
-                html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
-            });
-            render.innerHTML = html;
-        }
+            full.classList.remove('hidden');
+            render.innerHTML = ''; loader.classList.remove('hidden');
+            full.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            let url = (type === 'page' || type === 'five') ? `https://api.alquran.cloud/v1/page/${step}/quran-uthmani` : `https://api.alquran.cloud/v1/surah/${step}/quran-uthmani`;
+            
+            const apiData = await fetchQuranData(url);
+            loader.classList.add('hidden');
 
-        // --- Theme & Extras ---
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('theme-ico').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-            lucide.createIcons();
-        }
-
-        function showToast(m) {
-            const t = document.getElementById('toast');
-            t.innerText = m;
-            t.classList.remove('translate-y-32', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
-        }
-
-        window.onload = () => {
-            if(!localStorage.getItem('notif_seen')) {
-                setTimeout(() => document.getElementById('notif-prompt').classList.remove('hidden'), 2000);
+            if(apiData) {
+                let ayahs = apiData.ayahs || [];
+                if(type === 'amma') {
+                     const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
+                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+                }
+                render.innerHTML = generateQuranHTML(ayahs);
             }
+        }
+        function closeReview() { document.getElementById('rev-full-view').classList.add('hidden'); }
+
+        // --- Auto Scroll (Seeker) Logic ---
+        const track = document.getElementById('scroll-track');
+        const thumb = document.getElementById('scroll-thumb');
+        const autoScrollContainer = document.getElementById('auto-scroll-container');
+        let isDragging = false, scrollSpeed = 0, maxScrollSpeed = 4, animationFrameId = null, scrollAccumulator = 0, seekerTimeout = null;
+
+        function activateSeeker() { autoScrollContainer.classList.add('active-seeker'); if (seekerTimeout) clearTimeout(seekerTimeout); }
+        function deactivateSeeker() { if (!isDragging) autoScrollContainer.classList.remove('active-seeker'); }
+        function updateThumbPosition(clientY) {
+            const trackRect = track.getBoundingClientRect();
+            let y = clientY - trackRect.top;
+            y = Math.max(0, Math.min(y, trackRect.height - thumb.offsetHeight));
+            thumb.style.top = `${y}px`;
+            const percentage = y / (trackRect.height - thumb.offsetHeight);
+            scrollSpeed = percentage > 0.05 ? 0.2 + (Math.pow((percentage - 0.05) / 0.95, 2) * maxScrollSpeed) : 0;
+            if (scrollSpeed > 0 && !animationFrameId) autoScrollLoop();
+            else if (scrollSpeed === 0 && animationFrameId) resetAutoScroll();
+        }
+        function autoScrollLoop() {
+            if (scrollSpeed > 0) {
+                scrollAccumulator += scrollSpeed;
+                if (scrollAccumulator >= 1) {
+                    window.scrollBy(0, Math.floor(scrollAccumulator));
+                    scrollAccumulator -= Math.floor(scrollAccumulator);
+                }
+                const isBottom = Math.ceil(window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5;
+                animationFrameId = !isBottom ? requestAnimationFrame(autoScrollLoop) : null;
+            } else animationFrameId = null;
+        }
+        function resetAutoScroll() {
+            scrollSpeed = 0; scrollAccumulator = 0; thumb.style.top = '0px';
+            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+        }
+        
+        // Listeners for Scroller
+        thumb.addEventListener('mousedown', (e) => { isDragging = true; activateSeeker(); e.preventDefault(); });
+        window.addEventListener('mousemove', (e) => { if (isDragging) updateThumbPosition(e.clientY); });
+        window.addEventListener('mouseup', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        thumb.addEventListener('touchstart', (e) => { isDragging = true; activateSeeker(); }, {passive: false});
+        window.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); updateThumbPosition(e.touches[0].clientY); }, {passive: false});
+        window.addEventListener('touchend', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        track.addEventListener('click', (e) => { if (e.target === thumb) return; activateSeeker(); updateThumbPosition(e.clientY); seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        autoScrollContainer.addEventListener('touchstart', activateSeeker, {passive: true});
+        autoScrollContainer.addEventListener('mouseenter', activateSeeker);
+        autoScrollContainer.addEventListener('mouseleave', () => { seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+
+        // --- Init App ---
+        window.onload = () => {
+            initTheme(); // Initialize Dark/Black mode if saved
+            
+            // Particles setup
+            particlesJS('particles-js', {
+                "particles": { "number": { "value": window.innerWidth < 768 ? 20 : 40 }, "color": { "value": "#10b981" }, "opacity": { "value": 0.3 }, "size": { "value": 2 }, "line_linked": { "enable": true, "distance": 150, "color": "#10b981", "opacity": 0.2 }, "move": { "enable": true, "speed": 1.5 } },
+                "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } } },
+                "retina_detect": true
+            });
+
+            // Start Notification Engine if permission is already granted
+            if (Notification.permission === "granted" && localStorage.getItem('notifs') === 'on') {
+                startNotificationEngine();
+            } else if (!localStorage.getItem('notif_seen')) {
+                // Show prompt if not seen
+                setTimeout(() => document.getElementById('notif-prompt').classList.remove('hidden'), 3000);
+            }
+            
             showTab('schedule');
+            lucide.createIcons();
         };
     </script>
 </body>
