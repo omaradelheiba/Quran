@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق | يلا نختم</title>
+    <title>لنحيي سنن مهجورة | الإصدار الملكي</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -157,7 +157,7 @@
         .surah-frame::before { right: -1rem; }
         .surah-frame::after { left: -1rem; }
 
-        /* --- Custom Dropdowns (General Mushaf) --- */
+        /* --- Custom Dropdowns --- */
         .custom-dropdown-container { position: relative; width: 100%; z-index: 10; min-width: 150px;}
         .custom-dropdown-selected {
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(16px);
@@ -236,6 +236,18 @@
             cursor: pointer;
         }
 
+        /* --- Custom Audio Player Styling --- */
+        audio {
+            width: 100%;
+            height: 50px;
+            border-radius: 1rem;
+            outline: none;
+            filter: sepia(100%) hue-rotate(110deg) saturate(200%) brightness(0.8);
+        }
+        body.theme-black audio {
+            filter: sepia(100%) hue-rotate(10deg) saturate(300%) brightness(0.6);
+        }
+
         /* --- Utilities --- */
         .spinner {
             width: 40px; height: 40px; border: 3px solid rgba(212, 175, 55, 0.1);
@@ -268,6 +280,14 @@
         #mobile-menu-drawer {
             box-shadow: -10px 0 30px rgba(0,0,0,0.5);
         }
+        
+        /* Progress Bar Animation */
+        .progress-striped {
+            background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            animation: progress-stripes 1s linear infinite;
+        }
+        @keyframes progress-stripes { from { background-position: 1rem 0; } to { background-position: 0 0; } }
     </style>
 </head>
 <body>
@@ -289,11 +309,11 @@
             <h2 class="text-xl font-black text-brand-goldLight">القائمة الرئيسية</h2>
             <div class="h-px bg-brand-gold/30 w-1/2 mx-auto mt-3"></div>
         </div>
-        <button onclick="showTab('schedule'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-list-check w-6"></i> المجدول</button>
-        <button onclick="showTab('general'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-book-quran w-6"></i> المصحف العام</button>
+        <button onclick="showTab('general'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-book-quran w-6"></i> المصحف الشريف</button>
+        <button onclick="showTab('schedule'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-list-check w-6"></i> الحفظ</button>
         <button onclick="showTab('review'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-clock-rotate-left w-6"></i> المراجعة</button>
         <button onclick="showTab('notifications'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-bell w-6"></i> التنبيهات</button>
-        <button onclick="showTab('settings'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-gear w-6"></i> الإعدادات</button>
+        <button onclick="showTab('thanks'); toggleMobileMenu()" class="nav-btn w-full justify-start"><i class="fa-solid fa-heart w-6"></i> رسالة شكر</button>
     </div>
 
     <!-- Notifications Prompt Modal -->
@@ -329,17 +349,17 @@
                 </div>
                 <div class="hidden md:block">
                     <h1 class="text-xl md:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-l from-brand-goldLight to-[#fff]">يلا نختم</h1>
-                    <p class="text-[10px] text-brand-glow font-semibold opacity-80">لنحيي سنة الحفظ</p>
+                    <p class="text-[10px] text-brand-glow font-semibold opacity-80">لنحيي سنن مهجورة</p>
                 </div>
             </div>
 
             <!-- Tabs (Desktop Only) -->
             <nav class="hidden md:flex justify-center items-center gap-2 bg-brand-dark/40 p-1.5 rounded-2xl border border-brand-light/30">
-                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active whitespace-nowrap text-sm"><i class="fa-solid fa-list-check"></i> المجدول</button>
-                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-book-quran"></i> المصحف العام</button>
+                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn active whitespace-nowrap text-sm"><i class="fa-solid fa-book-quran"></i> المصحف الشريف</button>
+                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-list-check"></i> الحفظ</button>
                 <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-clock-rotate-left"></i> المراجعة</button>
                 <button onclick="showTab('notifications')" id="tab-btn-notifications" class="nav-btn whitespace-nowrap text-sm"><i class="fa-solid fa-bell"></i> التنبيهات</button>
-                <button onclick="showTab('settings')" id="tab-btn-settings" class="nav-btn whitespace-nowrap px-4"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="showTab('thanks')" id="tab-btn-thanks" class="nav-btn whitespace-nowrap px-4"><i class="fa-solid fa-heart"></i> رسالة شكر</button>
             </nav>
 
             <!-- Tools: Font Size & Theme Toggle -->
@@ -368,68 +388,8 @@
     <!-- Main Content Area -->
     <main class="container mx-auto px-2 md:px-4 pb-16 max-w-5xl relative z-10 min-h-[75vh]">
 
-        <!-- ================= 1. TAB: SCHEDULE (المجدول) ================= -->
-        <div id="view-schedule" class="view-content">
-            
-            <div id="no-db-alert" class="glass-card p-8 md:p-12 text-center hidden border-dashed border-2 border-brand-gold/50">
-                <i data-lucide="layout-list" class="w-16 h-16 mx-auto mb-6 text-brand-gold opacity-50"></i>
-                <h3 class="text-xl md:text-2xl font-bold mb-4 text-brand-goldLight">أهلاً بك.. لم تقم باختيار نظام الحفظ بعد</h3>
-                <p class="text-gray-300 mb-8 text-sm md:text-base">اختر النظام المناسب لك لنبدأ رحلة الحفظ والمراجعة ببركة الله.</p>
-                <button onclick="showTab('settings')" class="btn-gold px-8 md:px-12 py-4 rounded-xl text-base md:text-lg w-full md:w-auto shadow-lg">الذهاب للإعدادات والبدء</button>
-            </div>
-
-            <div id="schedule-active" class="grid grid-cols-1 lg:grid-cols-4 gap-6 hidden">
-                <!-- Sidebar Stats -->
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="glass-card p-5 md:p-6 border-r-4 border-brand-gold text-center relative overflow-hidden flex flex-col items-center">
-                        <div class="absolute -right-10 -top-10 text-brand-main opacity-20"><i class="fa-solid fa-shield-halved text-9xl"></i></div>
-                        <span class="text-xs text-brand-neon font-bold uppercase tracking-widest block mb-2 relative z-10" id="plan-label">النظام الحالي</span>
-                        <h2 class="text-xl md:text-2xl font-black text-brand-goldLight mb-6 relative z-10" id="task-title">---</h2>
-                        
-                        <div class="bg-brand-dark/60 p-4 w-full rounded-xl mb-6 relative z-10 border border-brand-light/30">
-                            <p class="text-xs text-gray-400 mb-2">نسبة الإنجاز</p>
-                            <div class="flex items-center gap-3">
-                                <div class="flex-grow h-2 bg-brand-dark rounded-full overflow-hidden border border-brand-main">
-                                    <div id="progress-bar" class="h-full bg-gradient-to-l from-brand-gold to-brand-neon w-[5%] transition-all duration-1000"></div>
-                                </div>
-                                <span class="text-xs font-bold text-brand-goldLight" id="progress-text">0%</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex gap-3 relative z-10 w-full">
-                            <button onclick="markDone()" class="flex-grow btn-gold py-3 md:py-4 rounded-xl text-base md:text-lg flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-check-circle"></i> أتممت الورد
-                            </button>
-                            <!-- Go Back Button -->
-                            <button onclick="goBackWird()" id="btn-go-back" class="w-14 md:w-16 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-colors text-lg" title="التراجع للورد السابق">
-                                <i class="fa-solid fa-rotate-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-5 md:p-6 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-brand-glow mb-1 font-bold">إجمالي المحفوظ</p>
-                            <p class="text-2xl md:text-3xl font-black text-brand-goldLight" id="stat-total">0</p>
-                        </div>
-                        <i class="fa-solid fa-award text-3xl md:text-4xl text-brand-gold opacity-50"></i>
-                    </div>
-                </div>
-
-                <!-- Reading Area -->
-                <div class="lg:col-span-3 glass-card p-4 md:p-10 min-h-[60vh] relative overflow-hidden">
-                    <div id="schedule-loading" class="text-center py-20 hidden">
-                        <div class="spinner"></div>
-                        <p class="text-brand-goldLight mt-4 font-bold text-sm md:text-base">جاري جلب الورد المخصص لك...</p>
-                    </div>
-                    <div id="quran-render-schedule" class="quran-text transition-all duration-300"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= 2. TAB: GENERAL (المصحف العام) ================= -->
-        <div id="view-general" class="view-content hidden">
+        <!-- ================= 1. TAB: GENERAL (المصحف الشريف) ================= -->
+        <div id="view-general" class="view-content">
             <div class="glass-card p-4 md:p-10 min-h-[70vh]">
                 
                 <!-- Dropdowns Header -->
@@ -457,25 +417,194 @@
             </div>
         </div>
 
+        <!-- ================= 2. TAB: SCHEDULE (الحفظ) ================= -->
+        <div id="view-schedule" class="view-content hidden">
+            
+            <!-- STATE A: NO PLAN SELECTED (Show Plans Grid) -->
+            <div id="plans-grid-container" class="hidden">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mb-3">أنظمة الحفظ</h2>
+                    <p class="text-brand-glow text-sm md:text-base">اختر النظام الذي يناسبك أو قم بإنشاء نظامك الخاص.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Plan A -->
+                    <div class="glass-card p-6 md:p-8 border-t-4 border-brand-gold hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('page')">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-brand-gold group-hover:scale-110 transition-transform shadow-lg">
+                            <i class="fa-solid fa-file-lines text-2xl md:text-3xl text-brand-goldLight"></i>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black mb-3 text-white">صفحة يومياً</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">حفظ وجه كامل (صفحة) يومياً. المسار الكلاسيكي للختمة (604 صفحة).</p>
+                        <div class="text-sm font-bold text-brand-dark bg-brand-gold py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
+                    </div>
+                    <!-- Plan B -->
+                    <div class="glass-card p-6 md:p-8 border-t-4 border-brand-neon hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('amma')">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-brand-neon group-hover:scale-110 transition-transform shadow-lg">
+                            <i class="fa-solid fa-child-reaching text-2xl md:text-3xl text-brand-neon"></i>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black mb-3 text-white">جزء عمّ (سور)</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">يبدأ من سورة الناس صعوداً (سورة بسورة). للبدء بقصار السور وتثبيتها للصلاة.</p>
+                        <div class="text-sm font-bold text-brand-dark bg-brand-neon py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
+                    </div>
+                    <!-- Plan C -->
+                    <div class="glass-card p-6 md:p-8 border-t-4 border-[#60a5fa] hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('five')">
+                        <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-[#60a5fa] group-hover:scale-110 transition-transform shadow-lg">
+                            <i class="fa-solid fa-hand text-2xl md:text-3xl text-[#60a5fa]"></i>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-black mb-3 text-white">نظام الـ 5 آيات</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">قليل دائم خير من كثير منقطع. يجلب 5 آيات متعاقبة فقط. مثالي لضمان الاستمرارية.</p>
+                        <div class="text-sm font-bold text-brand-dark bg-[#60a5fa] py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
+                    </div>
+                </div>
+
+                <!-- Custom Plan Card -->
+                <div id="custom-plan-card" class="glass-card p-6 border-t-4 border-purple-400 relative mb-8">
+                    <button onclick="hideCustomPlanCard()" class="absolute top-4 left-4 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-400">
+                            <i class="fa-solid fa-sliders text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">النظام المخصص</h3>
+                            <p class="text-sm text-purple-300">حدد المقدار الذي يناسب قدرتك يومياً</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4 items-end">
+                        <div class="w-full md:w-1/3">
+                            <label class="text-xs text-gray-300 mb-2 block">نوع المقدار</label>
+                            <select id="custom-plan-type" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-4 py-3 text-white outline-none">
+                                <option value="ayah">آيات</option>
+                                <option value="page">صفحات</option>
+                                <option value="surah">سور</option>
+                                <option value="juz">أجزاء</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-1/3">
+                            <label class="text-xs text-gray-300 mb-2 block">العدد</label>
+                            <input type="number" id="custom-plan-amount" value="10" min="1" max="100" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-4 py-3 text-white outline-none">
+                        </div>
+                        <div class="w-full md:w-1/3">
+                            <button onclick="startCustomPlan()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg">بدء النظام المخصص</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATE B: PLAN ACTIVE (Show Progress & Reading) -->
+            <div id="schedule-active" class="hidden">
+                
+                <!-- Huge Progress Section -->
+                <div class="glass-card p-6 md:p-8 mb-6 border-b-4 border-brand-gold relative overflow-hidden">
+                    <div class="absolute -left-10 -top-10 opacity-5"><i class="fa-solid fa-chart-line text-9xl text-white"></i></div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 relative z-10">
+                        <div>
+                            <span class="text-xs text-brand-neon font-bold bg-brand-neon/10 px-3 py-1 rounded-lg border border-brand-neon/30" id="plan-label">النظام الحالي</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mt-3" id="task-title">---</h2>
+                        </div>
+                        <button onclick="hardReset()" class="text-sm bg-red-500/10 hover:bg-red-600 border border-red-500/30 text-red-400 hover:text-white py-2 px-4 rounded-xl transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-trash-can"></i> حذف النظام والبيانات
+                        </button>
+                    </div>
+
+                    <div class="bg-brand-dark/80 p-5 rounded-2xl border border-brand-light/30 relative z-10">
+                        <div class="flex justify-between items-end mb-3">
+                            <div>
+                                <p class="text-sm text-gray-400">المعدل المنجز نحو الختمة</p>
+                                <p class="text-xl md:text-2xl font-bold text-white mt-1" id="rem-text">أنجزت ٠ - متبقي ٠</p>
+                            </div>
+                            <span class="text-2xl md:text-3xl font-black text-brand-goldLight" id="progress-text">0%</span>
+                        </div>
+                        <div class="w-full h-4 bg-brand-dark rounded-full overflow-hidden border border-brand-main shadow-inner">
+                            <div id="progress-bar" class="h-full bg-gradient-to-r from-brand-neon to-brand-gold w-[0%] transition-all duration-1000 progress-striped"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reading & Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="md:col-span-1 flex flex-row md:flex-col gap-3">
+                        <button onclick="markDone()" class="flex-grow md:w-full btn-gold py-4 rounded-xl text-lg flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-check-double"></i> أتممت الورد
+                        </button>
+                        <button onclick="goBackWird()" id="btn-go-back" class="w-16 md:w-full bg-brand-dark/50 border border-brand-light/30 text-gray-300 hover:bg-brand-main hover:text-white py-4 rounded-xl flex items-center justify-center transition-colors text-lg" title="تراجع للورد السابق">
+                            <i class="fa-solid fa-rotate-right md:mr-2"></i> <span class="hidden md:inline">التراجع للورد السابق</span>
+                        </button>
+                    </div>
+
+                    <div class="md:col-span-3 glass-card p-4 md:p-10 min-h-[60vh] relative overflow-hidden">
+                        <div id="schedule-loading" class="text-center py-20 hidden">
+                            <div class="spinner"></div>
+                            <p class="text-brand-goldLight mt-4 font-bold text-sm md:text-base">جاري جلب الورد المخصص لك...</p>
+                        </div>
+                        <div id="quran-render-schedule" class="quran-text transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ================= 3. TAB: REVIEW (المراجعة) ================= -->
         <div id="view-review" class="view-content hidden">
-            <div class="glass-card p-5 md:p-6 mb-8 flex flex-col md:flex-row items-center justify-between border-r-4 border-brand-gold gap-4 text-center md:text-right">
-                <div>
-                    <h2 class="text-xl md:text-2xl font-black text-brand-goldLight">سجل المراجعة والأرشيف</h2>
-                    <p class="text-brand-glow text-xs md:text-sm mt-1">اضغط على أي ورد قمت بحفظه سابقاً لمراجعته وتثبيته.</p>
-                </div>
-                <i class="fa-solid fa-history text-3xl md:text-4xl text-brand-main opacity-50 hidden md:block"></i>
+            
+            <!-- Review Tabs -->
+            <div class="flex justify-center gap-2 mb-8">
+                <button onclick="switchReviewTab('archive')" id="rev-tab-archive" class="px-6 py-2 rounded-full font-bold transition-colors bg-brand-neon/20 text-brand-neon border border-brand-neon">سجل الحفظ</button>
+                <button onclick="switchReviewTab('audio')" id="rev-tab-audio" class="px-6 py-2 rounded-full font-bold transition-colors bg-brand-dark/50 text-gray-400 border border-brand-light/30 hover:text-white">المراجعة الصوتية</button>
             </div>
-            
-            <div id="rev-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
-            
-            <!-- Full View Modal for Review -->
-            <div id="rev-full-view" class="glass-card p-4 md:p-10 mt-8 hidden relative border-2 border-brand-neon">
-                <button onclick="closeReview()" class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors z-20 text-xl">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-                <div id="review-loading" class="text-center py-20 hidden"><div class="spinner"></div></div>
-                <div id="quran-render-review" class="quran-text transition-all duration-300 mt-6 md:mt-0"></div>
+
+            <!-- SECTION A: Archive Grid -->
+            <div id="review-archive-sec">
+                <div id="rev-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
+                
+                <div id="rev-full-view" class="glass-card p-4 md:p-10 mt-8 hidden relative border-2 border-brand-neon">
+                    <button onclick="closeReview()" class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors z-20 text-xl">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <div id="review-loading" class="text-center py-20 hidden"><div class="spinner"></div></div>
+                    <div id="quran-render-review" class="quran-text transition-all duration-300 mt-6 md:mt-0"></div>
+                </div>
+            </div>
+
+            <!-- SECTION B: Audio Review -->
+            <div id="review-audio-sec" class="hidden">
+                <div class="glass-card p-6 md:p-10 max-w-2xl mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-4 border border-brand-gold shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                            <i class="fa-solid fa-headphones text-3xl text-brand-goldLight"></i>
+                        </div>
+                        <h2 class="text-2xl font-black text-brand-goldLight">المراجعة الصوتية</h2>
+                        <p class="text-brand-glow text-sm mt-2">اختر السورة والقارئ للبدء في المراجعة الصوتية.</p>
+                    </div>
+
+                    <div class="flex flex-col gap-5 mb-8">
+                        <div>
+                            <label class="text-xs text-brand-glow mb-2 block font-bold">اختر السورة</label>
+                            <select id="audio-surah" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-4 py-3 text-white outline-none">
+                                <option value="" disabled selected>تحميل السور...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-brand-glow mb-2 block font-bold">اختر القارئ</label>
+                            <select id="audio-reciter" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-4 py-3 text-white outline-none">
+                                <option value="minsh">محمد صديق المنشاوي</option>
+                                <option value="husr">محمود خليل الحصري</option>
+                                <option value="yasser">ياسر الدوسري</option>
+                                <option value="afs">مشاري راشد العفاسي</option>
+                                <option value="shur">سعود الشريم</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-dark/80 p-6 rounded-2xl border border-brand-light/30">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-brand-goldLight" id="audio-title">جاهز للتشغيل</span>
+                            <i class="fa-solid fa-compact-disc text-brand-neon animate-pulse"></i>
+                        </div>
+                        <audio id="audio-player" class="w-full" controls></audio>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -524,7 +653,6 @@
                     </div>
                     
                     <div class="mt-6 flex flex-col gap-2">
-                        <!-- Added Test Notification Button -->
                         <button onclick="sendPushNotification('تجربة الإشعارات', 'إذا رأيت هذه الرسالة وسمعت الصوت، فالإشعارات تعمل بنجاح!')" class="text-sm bg-brand-gold hover:bg-[#b8860b] text-brand-dark font-bold py-3 px-6 rounded-lg transition-colors border border-brand-gold/50 shadow-md">
                             <i class="fa-solid fa-bullhorn mr-1"></i> تجربة الإشعارات الآن
                         </button>
@@ -536,47 +664,21 @@
             </div>
         </div>
 
-        <!-- ================= 5. TAB: SETTINGS (الإعدادات) ================= -->
-        <div id="view-settings" class="view-content hidden">
-            <div class="text-center mb-10">
-                <h2 class="text-2xl md:text-3xl font-black text-brand-goldLight mb-3">أنظمة الحفظ والمراجعة</h2>
-                <p class="text-brand-glow text-sm md:text-base">تغيير النظام سيؤدي لتصفير التقدم الحالي لتبدأ رحلة جديدة.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Plan A -->
-                <div class="glass-card p-6 md:p-8 border-t-4 border-brand-gold hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('page')">
-                    <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-brand-gold group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-file-lines text-2xl md:text-3xl text-brand-goldLight"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-black mb-3 text-white">صفحة يومياً</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">حفظ وجه كامل (صفحة) يومياً. المسار الكلاسيكي (604 ورد). يفضل الالتزام به بعد صلاة الفجر للبركة.</p>
-                    <div class="text-sm font-bold text-brand-dark bg-brand-gold py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
+        <!-- ================= 5. TAB: THANKS (رسالة شكر) ================= -->
+        <div id="view-thanks" class="view-content hidden">
+            <div class="glass-card p-8 md:p-16 text-center max-w-3xl mx-auto border-t-4 border-brand-gold">
+                <!-- Line Art Heart -->
+                <svg class="w-32 h-32 md:w-48 md:h-48 mx-auto mb-8 text-brand-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                
+                <h2 class="text-3xl md:text-5xl font-black text-brand-goldLight mb-6 leading-tight">هنيئاً لك هذه الهمة</h2>
+                <div class="bg-brand-dark/40 p-6 rounded-2xl border border-brand-light/20 shadow-inner">
+                    <p class="text-lg md:text-xl text-gray-200 leading-loose">
+                        "يُقال لصاحب القرآن اقرأ وارتقِ ورتّل كما كنت ترتل في الدنيا، فإن منزلتك عند آخر آية تقرأ بها"<br><br>
+                        شكراً لك لأنك اخترت أن تجعل القرآن رفيقاً لدربك ونوراً لقلبك. نسأل الله أن يثبت القرآن في صدرك، وأن يجعله حجة لك لا عليك، وأن ينير به بصيرتك. واصل في مسيرتك، فقليلٌ دائم خيرٌ من كثير منقطع.
+                    </p>
                 </div>
-                <!-- Plan B -->
-                <div class="glass-card p-6 md:p-8 border-t-4 border-brand-neon hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('amma')">
-                    <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-brand-neon group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-child-reaching text-2xl md:text-3xl text-brand-neon"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-black mb-3 text-white">جزء عمّ (سور)</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">يبدأ من سورة الناس صعوداً (سورة بسورة). مثالي للبدء بقصار السور وتثبيتها للصلاة والمراجعة.</p>
-                    <div class="text-sm font-bold text-brand-dark bg-brand-neon py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
-                </div>
-                <!-- Plan C -->
-                <div class="glass-card p-6 md:p-8 border-t-4 border-[#60a5fa] hover:bg-brand-light/20 transition cursor-pointer text-center group flex flex-col h-full" onclick="initPlan('five')">
-                    <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-brand-dark rounded-full flex items-center justify-center mb-6 border border-[#60a5fa] group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-hand text-2xl md:text-3xl text-[#60a5fa]"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-black mb-3 text-white">نظام الـ 5 آيات</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow">قليل دائم خير من كثير منقطع. مناسب جداً للمبتدئين ولضمان الاستمرارية وعدم الانقطاع نهائياً.</p>
-                    <div class="text-sm font-bold text-brand-dark bg-[#60a5fa] py-3 rounded-xl shadow-md">تفعيل هذا النظام</div>
-                </div>
-            </div>
-
-            <div class="mt-12 md:mt-16 text-center border-t border-brand-light/20 pt-8">
-                <button onclick="hardReset()" class="text-red-400/80 hover:text-white bg-red-500/10 hover:bg-red-600 px-8 py-4 rounded-xl text-sm md:text-base font-bold flex items-center gap-3 mx-auto transition-colors shadow-lg">
-                    <i class="fa-solid fa-trash-can text-lg"></i> مسح جميع البيانات السابقة وإعادة الضبط (لا يمكن التراجع)
-                </button>
             </div>
         </div>
 
@@ -613,7 +715,6 @@
         `;
         const blob = new Blob([swCode], { type: 'text/javascript' });
         const swUrl = URL.createObjectURL(blob);
-        
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register(swUrl).catch(err => console.log("SW Reg Error:", err));
         }
@@ -682,7 +783,6 @@
             const iconClass = isBlack ? 'fa-sun' : 'fa-moon';
             const desktopIcon = document.getElementById('theme-icon-desktop');
             const mobileIcon = document.getElementById('theme-icon-mobile');
-            
             if (desktopIcon) desktopIcon.className = `fa-solid ${iconClass}`;
             if (mobileIcon) mobileIcon.className = `fa-solid ${iconClass}`;
         }
@@ -693,22 +793,35 @@
             save: (data) => localStorage.setItem('nakhtem_core', JSON.stringify(data))
         };
 
-        function initPlan(type) {
+        function hideCustomPlanCard() {
+            document.getElementById('custom-plan-card').classList.add('hidden');
+        }
+
+        function startCustomPlan() {
+            const type = document.getElementById('custom-plan-type').value;
+            const amount = parseInt(document.getElementById('custom-plan-amount').value) || 1;
+            initPlan('custom', type, amount);
+        }
+
+        function initPlan(type, customType = null, customAmount = null) {
             const data = {
                 plan: type,
+                customType: customType,
+                customAmount: customAmount,
                 current: type === 'amma' ? 114 : 1, 
                 history: [],
                 joined: new Date().toISOString()
             };
             DB.save(data);
-            showToast("تم تفعيل النظام بنجاح.. بالتوفيق!");
-            setTimeout(() => showTab('schedule'), 500);
+            showToast("تم تفعيل النظام بنجاح.. توكلنا على الله!");
+            setTimeout(() => renderSchedule(), 300);
         }
 
         function hardReset() {
-            if(confirm("هل أنت متأكد؟ سيتم حذف تقدمك بالكامل ولن تتمكن من استرجاعه.")) {
+            if(confirm("هل أنت متأكد من مسح كافة بيانات الحفظ وإعادة اختيار النظام؟ (لا يمكن التراجع)")) {
                 localStorage.removeItem('nakhtem_core');
-                location.reload();
+                document.getElementById('custom-plan-card').classList.remove('hidden'); // Show if hidden
+                renderSchedule();
             }
         }
 
@@ -777,63 +890,34 @@
         }
 
         function sendPushNotification(title, body) {
-            // محاولة إطلاق تنبيه صوتي خفيف إذا كان المتصفح يسمح
-            try {
-                const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-                audio.play().catch(e => {});
-            } catch(e){}
-
-            // عرض رسالة داخل التطبيق كضمان مرئي
+            try { const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); audio.play().catch(e => {}); } catch(e){}
             showToast(title + " | " + body);
 
-            // إرسال الإشعار الخارجي
             if (Notification.permission === 'granted') {
                 try {
                     if ('serviceWorker' in navigator) {
                         navigator.serviceWorker.getRegistration().then(reg => {
                             if (reg) {
-                                reg.showNotification(title, {
-                                    body: body,
-                                    icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png",
-                                    vibrate: [200, 100, 200],
-                                    tag: "nakhtem-notif",
-                                    requireInteraction: true
-                                });
-                            } else {
-                                new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
-                            }
-                        }).catch(e => {
-                            new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
-                        });
-                    } else {
-                        new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" });
-                    }
-                } catch(e) {
-                    console.error("Notif Error:", e);
-                }
+                                reg.showNotification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png", vibrate: [200, 100, 200], tag: "nakhtem-notif" });
+                            } else { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); }
+                        }).catch(e => { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); });
+                    } else { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png" }); }
+                } catch(e) { console.error("Notif Error:", e); }
             }
         }
 
         function startNotificationEngine() {
             if (Notification.permission !== "granted" || localStorage.getItem('notifs') !== 'on') return;
             
-            // Check every 20 seconds to overcome browser background tab throttling
             setInterval(() => {
                 const now = new Date();
-                const currentH = now.getHours();
-                const currentM = now.getMinutes();
+                const currentTotalMins = now.getHours() * 60 + now.getMinutes();
                 const dateStr = now.toDateString();
-                const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
+                const dayOfWeek = now.getDay(); 
                 
-                const currentTotalMins = currentH * 60 + currentM;
-
-                // 1. Check Custom Wird Notifications
                 notifTimes.forEach(timeStr => {
                     const [tH, tM] = timeStr.split(':').map(Number);
-                    const targetTotalMins = tH * 60 + tM;
-                    const diff = currentTotalMins - targetTotalMins;
-
-                    // Window of 15 minutes to catch if the browser was sleeping
+                    const diff = currentTotalMins - (tH * 60 + tM);
                     if (diff >= 0 && diff <= 15) {
                         const notifKey = `notif_${dateStr}_${tH}_${tM}`; 
                         if (!localStorage.getItem(notifKey)) {
@@ -843,11 +927,9 @@
                     }
                 });
 
-                // 2. Check Friday Kahf Notification (Fixed at 09:00 AM)
                 if (dayOfWeek === 5) {
-                    const targetTotalMins = 9 * 60; // 09:00 AM
-                    const diff = currentTotalMins - targetTotalMins;
-                    if (diff >= 0 && diff <= 30) { // Window of 30 minutes for Friday
+                    const diff = currentTotalMins - (9 * 60); 
+                    if (diff >= 0 && diff <= 30) { 
                         const kahfKey = `notif_kahf_${dateStr}`;
                         if (!localStorage.getItem(kahfKey)) {
                             sendPushNotification("سورة الكهف - نور ما بين الجمعتين", "لا تنسَ قراءة سورة الكهف في هذا اليوم المبارك.");
@@ -855,8 +937,7 @@
                         }
                     }
                 }
-
-            }, 20000); // 20 seconds interval
+            }, 20000); 
         }
 
         // --- UI & Tabs Management ---
@@ -865,7 +946,6 @@
             document.getElementById(`view-${id}`).classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            // Highlight active tab in Desktop
             const activeDesktop = document.getElementById(`tab-btn-${id}`);
             if(activeDesktop) activeDesktop.classList.add('active');
 
@@ -878,7 +958,7 @@
 
             if(id === 'schedule') renderSchedule();
             if(id === 'general') initGeneralTab();
-            if(id === 'review') renderReviewGrid();
+            if(id === 'review') { renderReviewGrid(); initAudioReviewTab(); }
             if(id === 'notifications') renderNotifSettings();
         }
 
@@ -893,18 +973,16 @@
         async function fetchQuranData(url) {
             try {
                 const res = await fetch(url);
-                if (!res.ok) throw new Error("API Error");
+                if (!res.ok) return null;
                 const json = await res.json();
                 return json.data;
-            } catch (e) {
-                console.error("Fetch error:", e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         function toArabicNumerals(num) {
+            if (num === null || num === undefined) return '';
             const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-            return num.toString().split('').map(digit => arabicNumbers[digit]).join('');
+            return num.toString().split('').map(char => (char >= '0' && char <= '9') ? arabicNumbers[parseInt(char)] : char).join('');
         }
 
         function generateQuranHTML(ayahs) {
@@ -953,94 +1031,119 @@
             return html;
         }
 
-
-        // --- TAB 1: Schedule Logic ---
+        // --- TAB 2: SCHEDULE (الحفظ) Logic ---
         async function renderSchedule() {
             const data = DB.get();
             if(!data) {
-                document.getElementById('no-db-alert').classList.remove('hidden');
+                document.getElementById('plans-grid-container').classList.remove('hidden');
                 document.getElementById('schedule-active').classList.add('hidden');
                 return;
             }
-            document.getElementById('no-db-alert').classList.add('hidden');
+            document.getElementById('plans-grid-container').classList.add('hidden');
             document.getElementById('schedule-active').classList.remove('hidden');
             
-            // Stats
-            document.getElementById('stat-total').innerText = data.history.length;
-            let planName = data.plan === 'page' ? 'صفحة يومياً' : (data.plan === 'amma' ? 'جزء عمّ' : '5 آيات');
-            document.getElementById('plan-label').innerText = `نظام: ${planName}`;
-            
-            // Check Go Back button state
-            const goBackBtn = document.getElementById('btn-go-back');
-            if (data.history.length === 0) {
-                goBackBtn.disabled = true;
-                goBackBtn.classList.add('opacity-30', 'cursor-not-allowed');
-            } else {
-                goBackBtn.disabled = false;
-                goBackBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+            // Progress Math
+            let totalSteps = 0; let unit = ''; let stepDone = data.history.length;
+            let planDesc = ''; let titleDesc = '';
+
+            if(data.plan === 'page') { totalSteps = 604; unit = 'صفحة'; planDesc = `نظام صفحة يومياً`; titleDesc = `الصفحة رقم ${toArabicNumerals(data.current)}`; }
+            else if(data.plan === 'amma') { totalSteps = 37; unit = 'سورة'; planDesc = `نظام جزء عمّ`; }
+            else if(data.plan === 'five') { totalSteps = 6236; unit = 'آية'; stepDone = stepDone * 5; planDesc = `نظام 5 آيات`; titleDesc = `الآيات من ${toArabicNumerals(data.current)} إلى ${toArabicNumerals(Math.min(6236, data.current + 4))}`; }
+            else if(data.plan === 'custom') { 
+                planDesc = `نظام مخصص (${toArabicNumerals(data.customAmount)} ${data.customType === 'ayah' ? 'آيات' : (data.customType === 'page' ? 'صفحات' : (data.customType === 'surah' ? 'سور' : 'أجزاء'))})`;
+                if(data.customType === 'ayah') { totalSteps = 6236; unit = 'آية'; stepDone = stepDone * data.customAmount; titleDesc = `الآيات من ${toArabicNumerals(data.current)} إلى ${toArabicNumerals(Math.min(6236, data.current + data.customAmount - 1))}`; }
+                if(data.customType === 'page') { totalSteps = 604; unit = 'صفحة'; stepDone = stepDone * data.customAmount; titleDesc = `الصفحات من ${toArabicNumerals(data.current)} إلى ${toArabicNumerals(Math.min(604, data.current + data.customAmount - 1))}`; }
+                if(data.customType === 'surah') { totalSteps = 114; unit = 'سورة'; stepDone = stepDone * data.customAmount; titleDesc = `السور من ${toArabicNumerals(data.current)} إلى ${toArabicNumerals(Math.min(114, data.current + data.customAmount - 1))}`; }
+                if(data.customType === 'juz') { totalSteps = 30; unit = 'جزء'; stepDone = stepDone * data.customAmount; titleDesc = `الأجزاء من ${toArabicNumerals(data.current)} إلى ${toArabicNumerals(Math.min(30, data.current + data.customAmount - 1))}`; }
             }
 
-            // Progress Bar
-            let totalSteps = data.plan === 'page' ? 604 : (data.plan === 'amma' ? 37 : 1248);
-            const prog = Math.min(100, (data.history.length / totalSteps) * 100);
+            let rem = Math.max(0, totalSteps - stepDone);
+            const prog = Math.min(100, (stepDone / totalSteps) * 100);
+            
+            document.getElementById('plan-label').innerText = planDesc;
+            if(data.plan !== 'amma') document.getElementById('task-title').innerText = titleDesc;
+            
+            document.getElementById('rem-text').innerText = `أنجزت ${toArabicNumerals(stepDone)} - متبقي ${toArabicNumerals(rem)} ${unit} للختمة`;
             document.getElementById('progress-bar').style.width = `${Math.max(2, prog)}%`;
-            document.getElementById('progress-text').innerText = `${Math.floor(prog)}%`;
+            document.getElementById('progress-text').innerText = `${toArabicNumerals(Math.floor(prog))}%`;
 
-            // Setup Render
+            const goBackBtn = document.getElementById('btn-go-back');
+            if (data.history.length === 0) { goBackBtn.disabled = true; goBackBtn.classList.add('opacity-30', 'cursor-not-allowed'); } 
+            else { goBackBtn.disabled = false; goBackBtn.classList.remove('opacity-30', 'cursor-not-allowed'); }
+
             const renderBox = document.getElementById('quran-render-schedule');
             const loader = document.getElementById('schedule-loading');
             renderBox.innerHTML = ''; loader.classList.remove('hidden');
 
-            let apiData = null;
-            let ayahs = [];
+            let apiData = null; let ayahs = [];
 
-            if(data.plan === 'page') {
-                document.getElementById('task-title').innerText = `الورد: صفحة ${data.current}`;
-                const url = `https://api.alquran.cloud/v1/page/${data.current}/quran-uthmani`;
-                apiData = await fetchQuranData(url);
-                if(apiData) ayahs = apiData.ayahs || [];
-            } else if(data.plan === 'amma') {
-                const url = `https://api.alquran.cloud/v1/surah/${data.current}/quran-uthmani`;
-                apiData = await fetchQuranData(url);
-                if(apiData) {
-                    document.getElementById('task-title').innerText = `سورة ${apiData.name.replace('سُورَةُ ', '')}`;
-                    const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
-                    ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
-                }
-            } else if(data.plan === 'five') {
-                // Fetch 5 consecutive ayahs across boundaries
-                document.getElementById('task-title').innerText = `الورد: 5 آيات (بدءاً من آية ${data.current})`;
-                try {
-                    const promises = [];
-                    for(let i=0; i<5; i++) {
-                        if(data.current + i <= 6236) { // Max ayahs in Quran
-                            promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${data.current + i}/quran-uthmani`));
-                        }
+            // Fetch Logic based on plan
+            try {
+                if(data.plan === 'page' || (data.plan === 'custom' && data.customType === 'page')) {
+                    let amount = data.plan === 'page' ? 1 : data.customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) {
+                        if(data.current + i <= 604) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/page/${data.current + i}/quran-uthmani`));
                     }
                     const results = await Promise.all(promises);
-                    ayahs = results.filter(a => a !== null); // The single ayah endpoint returns data matching exactly what we need
+                    results.forEach(res => { if(res && res.ayahs) ayahs = ayahs.concat(res.ayahs); });
                     apiData = ayahs.length > 0 ? true : null;
-                } catch(e) {
-                    apiData = null;
+                } 
+                else if(data.plan === 'amma' || (data.plan === 'custom' && data.customType === 'surah')) {
+                    let amount = data.plan === 'amma' ? 1 : data.customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) {
+                        let target = data.plan === 'amma' ? (data.current - i) : (data.current + i); // Amma goes down, custom goes up
+                        if(target >= 1 && target <= 114) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/surah/${target}/quran-uthmani`));
+                    }
+                    const results = await Promise.all(promises);
+                    results.forEach(res => { 
+                        if(res && res.ayahs) {
+                            if(data.plan === 'amma') document.getElementById('task-title').innerText = `سورة ${res.name.replace('سُورَةُ ', '')}`;
+                            const sInfo = { number: res.number, name: res.name, numberOfAyahs: res.numberOfAyahs, revelationType: res.revelationType };
+                            ayahs = ayahs.concat(res.ayahs.map(a => ({ ...a, surah: sInfo })));
+                        }
+                    });
+                    apiData = ayahs.length > 0 ? true : null;
+                } 
+                else if(data.plan === 'five' || (data.plan === 'custom' && data.customType === 'ayah')) {
+                    let amount = data.plan === 'five' ? 5 : data.customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) {
+                        if(data.current + i <= 6236) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${data.current + i}/quran-uthmani`));
+                    }
+                    const results = await Promise.all(promises);
+                    ayahs = results.filter(a => a !== null); 
+                    apiData = ayahs.length > 0 ? true : null;
                 }
-            }
+                else if (data.plan === 'custom' && data.customType === 'juz') {
+                    let promises = [];
+                    for(let i=0; i<data.customAmount; i++) {
+                        if(data.current + i <= 30) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/juz/${data.current + i}/quran-uthmani`));
+                    }
+                    const results = await Promise.all(promises);
+                    results.forEach(res => { if(res && res.ayahs) ayahs = ayahs.concat(res.ayahs); });
+                    apiData = ayahs.length > 0 ? true : null;
+                }
+            } catch(e) {}
 
             loader.classList.add('hidden');
 
             if(apiData && ayahs.length > 0) {
                 renderBox.innerHTML = generateQuranHTML(ayahs);
             } else {
-                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة. يرجى المحاولة لاحقاً.</p>';
+                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة أو انتهت الختمة.</p>';
             }
         }
 
         function markDone() {
             const data = DB.get();
-            data.history.push({ step: data.current, type: data.plan, date: new Date().toISOString() });
+            data.history.push({ step: data.current, type: data.plan, customType: data.customType, customAmount: data.customAmount, date: new Date().toISOString() });
             
             if(data.plan === 'page') data.current++;
-            else if(data.plan === 'five') data.current += 5; // Increment by 5 ayahs
             else if(data.plan === 'amma') data.current--; 
+            else if(data.plan === 'five') data.current += 5; 
+            else if(data.plan === 'custom') data.current += data.customAmount;
 
             DB.save(data);
             showToast("مبارك! تم تسجيل إنجازك بنجاح.");
@@ -1050,49 +1153,39 @@
         function goBackWird() {
             const data = DB.get();
             if (!data || data.history.length === 0) return;
-            
             const lastEntry = data.history.pop();
-            data.current = lastEntry.step; // Restore the previous pointer
-            
+            data.current = lastEntry.step; 
             DB.save(data);
             showToast("تم التراجع إلى الورد السابق");
             renderSchedule();
         }
 
-        // --- TAB 2: General Mushaf Logic ---
+        // --- TAB 1: General Mushaf Logic ---
         let generalListsLoaded = false;
         async function initGeneralTab() {
             if(generalListsLoaded) return;
-            
             const juzSelect = document.getElementById('gen-juz-select');
             for (let i = 1; i <= 30; i++) {
-                const option = document.createElement('option');
-                option.value = i; option.textContent = `الجزء ${toArabicNumerals(i)}`;
+                const option = document.createElement('option'); option.value = i; option.textContent = `الجزء ${toArabicNumerals(i)}`;
                 juzSelect.appendChild(option);
             }
-
             const data = await fetchQuranData('https://api.alquran.cloud/v1/surah');
             if(data) {
                 const surahSelect = document.getElementById('gen-surah-select');
                 data.forEach(surah => {
-                    const option = document.createElement('option');
-                    option.value = surah.number;
-                    option.textContent = `${surah.number}. سورة ${surah.name.replace('سُورَةُ ', '')}`;
+                    const option = document.createElement('option'); option.value = surah.number; option.textContent = `${toArabicNumerals(surah.number)}. سورة ${surah.name.replace('سُورَةُ ', '')}`;
                     surahSelect.appendChild(option);
                 });
-
                 buildCustomDropdown('gen-surah-select', async (val) => {
                     const juzDisp = document.querySelector('#gen-juz-select').nextElementSibling.querySelector('span');
                     juzDisp.innerText = 'اختر الجزء...'; juzDisp.className = 'truncate';
                     await loadGeneralContent(`https://api.alquran.cloud/v1/surah/${val}/quran-uthmani`, 'surah');
                 });
-
                 buildCustomDropdown('gen-juz-select', async (val) => {
                     const surahDisp = document.querySelector('#gen-surah-select').nextElementSibling.querySelector('span');
                     surahDisp.innerText = 'اختر السورة...'; surahDisp.className = 'truncate';
                     await loadGeneralContent(`https://api.alquran.cloud/v1/juz/${val}/quran-uthmani`, 'juz');
                 });
-                
                 generalListsLoaded = true;
             }
         }
@@ -1102,10 +1195,8 @@
             const loader = document.getElementById('general-loading');
             renderBox.innerHTML = ''; loader.classList.remove('hidden');
             resetAutoScroll();
-
             const apiData = await fetchQuranData(url);
             loader.classList.add('hidden');
-
             if(apiData) {
                 let ayahs = apiData.ayahs || [];
                 if(type === 'surah') {
@@ -1113,59 +1204,62 @@
                      ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
                 }
                 renderBox.innerHTML = generateQuranHTML(ayahs);
-            } else {
-                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة.</p>';
-            }
+            } else renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة.</p>';
         }
 
-        // --- Custom Dropdown Logic ---
         function buildCustomDropdown(selectId, onChangeCallback) {
             const select = document.getElementById(selectId);
             const existingContainer = select.nextElementSibling;
             if (existingContainer && existingContainer.classList.contains('custom-dropdown-container')) existingContainer.remove();
-
             const container = document.createElement('div'); container.className = 'custom-dropdown-container';
             select.parentNode.insertBefore(container, select.nextSibling);
-            
             const selectedDisplay = document.createElement('div'); selectedDisplay.className = 'custom-dropdown-selected text-sm md:text-base';
             const selectedText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
             selectedDisplay.innerHTML = `<span class="truncate">${selectedText}</span> <i class="fa-solid fa-chevron-down text-brand-gold text-xs transition-transform duration-300 ml-2"></i>`;
             container.appendChild(selectedDisplay);
-            
             const optionsList = document.createElement('div'); optionsList.className = 'custom-dropdown-options no-scrollbar';
-            
             Array.from(select.options).forEach((option, index) => {
                 if (index === 0 && option.disabled) return;
                 const optionDiv = document.createElement('div'); optionDiv.className = 'custom-dropdown-option'; optionDiv.innerText = option.text;
-                
                 optionDiv.addEventListener('click', () => {
                     select.value = option.value;
                     const spanText = selectedDisplay.querySelector('span');
                     spanText.innerText = option.text; spanText.className = 'truncate font-bold text-brand-goldLight';
                     optionsList.classList.remove('open'); selectedDisplay.classList.remove('active');
-                    selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)';
-                    container.style.zIndex = '10';
-                    select.dispatchEvent(new Event('change'));
-                    if(onChangeCallback) onChangeCallback(option.value);
+                    selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)'; container.style.zIndex = '10';
+                    select.dispatchEvent(new Event('change')); if(onChangeCallback) onChangeCallback(option.value);
                 });
                 optionsList.appendChild(optionDiv);
             });
             container.appendChild(optionsList);
-            
             selectedDisplay.addEventListener('click', (e) => {
                 e.stopPropagation();
                 document.querySelectorAll('.custom-dropdown-options').forEach(list => { if (list !== optionsList) list.classList.remove('open'); });
                 const isOpen = optionsList.classList.contains('open');
-                if (isOpen) {
-                    optionsList.classList.remove('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)'; container.style.zIndex = '10';
-                } else {
-                    optionsList.classList.add('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(180deg)'; container.style.zIndex = '50';
-                }
+                if (isOpen) { optionsList.classList.remove('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(0deg)'; container.style.zIndex = '10'; } 
+                else { optionsList.classList.add('open'); selectedDisplay.querySelector('i').style.transform = 'rotate(180deg)'; container.style.zIndex = '50'; }
             });
         }
         document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown-options').forEach(list => list.classList.remove('open')); });
 
-        // --- TAB 3: Review Logic ---
+        // --- TAB 3: Review Logic (Archive & Audio) ---
+        function switchReviewTab(tab) {
+            const btnArch = document.getElementById('rev-tab-archive');
+            const btnAud = document.getElementById('rev-tab-audio');
+            const secArch = document.getElementById('review-archive-sec');
+            const secAud = document.getElementById('review-audio-sec');
+
+            if(tab === 'archive') {
+                btnArch.className = "px-6 py-2 rounded-full font-bold transition-colors bg-brand-neon/20 text-brand-neon border border-brand-neon";
+                btnAud.className = "px-6 py-2 rounded-full font-bold transition-colors bg-brand-dark/50 text-gray-400 border border-brand-light/30 hover:text-white";
+                secArch.classList.remove('hidden'); secAud.classList.add('hidden');
+            } else {
+                btnAud.className = "px-6 py-2 rounded-full font-bold transition-colors bg-brand-neon/20 text-brand-neon border border-brand-neon";
+                btnArch.className = "px-6 py-2 rounded-full font-bold transition-colors bg-brand-dark/50 text-gray-400 border border-brand-light/30 hover:text-white";
+                secAud.classList.remove('hidden'); secArch.classList.add('hidden');
+            }
+        }
+
         function renderReviewGrid() {
             const data = DB.get();
             const grid = document.getElementById('rev-grid');
@@ -1179,139 +1273,155 @@
 
             [...data.history].reverse().forEach(h => {
                 const date = new Date(h.date).toLocaleDateString('ar-EG');
-                
                 let label = '';
-                if(h.type === 'page') label = `صفحة ${h.step}`;
-                else if(h.type === 'amma') label = `سورة رقم ${h.step}`;
-                else label = `من آية ${h.step} لـ ${h.step+4}`;
+                if(h.type === 'page' || (h.type === 'custom' && h.customType === 'page')) label = `صفحة ${toArabicNumerals(h.step)}`;
+                else if(h.type === 'amma' || (h.type === 'custom' && h.customType === 'surah')) label = `سورة رقم ${toArabicNumerals(h.step)}`;
+                else if(h.type === 'custom' && h.customType === 'juz') label = `جزء ${toArabicNumerals(h.step)}`;
+                else {
+                    let amount = h.type === 'five' ? 5 : (h.customAmount || 1);
+                    label = `آية ${toArabicNumerals(h.step)} لـ ${toArabicNumerals(h.step + amount - 1)}`;
+                }
                 
                 const card = document.createElement('div');
                 card.className = "bg-brand-dark/50 border border-brand-light/30 p-3 md:p-4 rounded-xl text-center cursor-pointer hover:border-brand-neon hover:bg-brand-main/40 transition-all group shadow-sm";
                 card.innerHTML = `
                     <p class="text-[9px] md:text-[10px] text-brand-glow mb-1 md:mb-2 font-mono">${date}</p>
-                    <h4 class="font-bold text-white text-sm md:text-base group-hover:text-brand-goldLight transition-colors"><i class="fa-solid fa-book-open text-xs md:text-sm ml-1 opacity-50"></i> ${label}</h4>
+                    <h4 class="font-bold text-white text-sm md:text-base group-hover:text-brand-goldLight transition-colors leading-relaxed"><i class="fa-solid fa-book-open text-xs md:text-sm ml-1 opacity-50"></i> ${label}</h4>
                 `;
-                card.onclick = () => openReviewItem(h.step, h.type);
+                card.onclick = () => openReviewItem(h.step, h.type, h.customType, h.customAmount);
                 grid.appendChild(card);
             });
         }
 
-        async function openReviewItem(step, type) {
+        async function openReviewItem(step, type, customType, customAmount) {
             const full = document.getElementById('rev-full-view');
             const render = document.getElementById('quran-render-review');
             const loader = document.getElementById('review-loading');
-            
-            full.classList.remove('hidden');
-            render.innerHTML = ''; loader.classList.remove('hidden');
+            full.classList.remove('hidden'); render.innerHTML = ''; loader.classList.remove('hidden');
             full.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            let url = '';
-            let isFive = false;
-            
-            if(type === 'page') url = `https://api.alquran.cloud/v1/page/${step}/quran-uthmani`;
-            else if(type === 'amma') url = `https://api.alquran.cloud/v1/surah/${step}/quran-uthmani`;
-            else isFive = true;
-            
-            let ayahs = [];
-            
-            if(!isFive) {
-                const apiData = await fetchQuranData(url);
-                if(apiData) {
-                    ayahs = apiData.ayahs || [];
-                    if(type === 'amma') {
-                         const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
-                         ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
-                    }
-                }
-            } else {
-                try {
-                    const promises = [];
-                    for(let i=0; i<5; i++) {
-                        if(step + i <= 6236) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${step + i}/quran-uthmani`));
+            let apiData = null; let ayahs = [];
+            try {
+                if(type === 'page' || (type === 'custom' && customType === 'page')) {
+                    let amount = type === 'page' ? 1 : customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) { if(step + i <= 604) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/page/${step + i}/quran-uthmani`)); }
+                    const results = await Promise.all(promises);
+                    results.forEach(res => { if(res && res.ayahs) ayahs = ayahs.concat(res.ayahs); });
+                    apiData = ayahs.length > 0 ? true : null;
+                } else if(type === 'amma' || (type === 'custom' && customType === 'surah')) {
+                    let amount = type === 'amma' ? 1 : customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) { 
+                        let target = type === 'amma' ? (step - i) : (step + i);
+                        if(target >= 1 && target <= 114) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/surah/${target}/quran-uthmani`)); 
                     }
                     const results = await Promise.all(promises);
-                    ayahs = results.filter(a => a !== null);
-                } catch(e) {}
-            }
+                    results.forEach(res => { 
+                        if(res && res.ayahs) {
+                            const sInfo = { number: res.number, name: res.name, numberOfAyahs: res.numberOfAyahs, revelationType: res.revelationType };
+                            ayahs = ayahs.concat(res.ayahs.map(a => ({ ...a, surah: sInfo })));
+                        }
+                    });
+                    apiData = ayahs.length > 0 ? true : null;
+                } else if(type === 'five' || (type === 'custom' && customType === 'ayah')) {
+                    let amount = type === 'five' ? 5 : customAmount;
+                    let promises = [];
+                    for(let i=0; i<amount; i++) { if(step + i <= 6236) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/ayah/${step + i}/quran-uthmani`)); }
+                    const results = await Promise.all(promises);
+                    ayahs = results.filter(a => a !== null); 
+                    apiData = ayahs.length > 0 ? true : null;
+                } else if (type === 'custom' && customType === 'juz') {
+                    let promises = [];
+                    for(let i=0; i<customAmount; i++) { if(step + i <= 30) promises.push(fetchQuranData(`https://api.alquran.cloud/v1/juz/${step + i}/quran-uthmani`)); }
+                    const results = await Promise.all(promises);
+                    results.forEach(res => { if(res && res.ayahs) ayahs = ayahs.concat(res.ayahs); });
+                    apiData = ayahs.length > 0 ? true : null;
+                }
+            } catch(e){}
             
             loader.classList.add('hidden');
-            if(ayahs.length > 0) {
-                render.innerHTML = generateQuranHTML(ayahs);
-            } else {
-                render.innerHTML = '<p class="text-center text-red-400">فشل جلب الورد.</p>';
-            }
+            if(apiData && ayahs.length > 0) render.innerHTML = generateQuranHTML(ayahs);
+            else render.innerHTML = '<p class="text-center text-red-400">فشل جلب الورد.</p>';
         }
         function closeReview() { document.getElementById('rev-full-view').classList.add('hidden'); }
 
+        // --- Audio Review Logic ---
+        let audioSurahsLoaded = false;
+        async function initAudioReviewTab() {
+            if (audioSurahsLoaded) return;
+            const surahSelect = document.getElementById('audio-surah');
+            const data = await fetchQuranData('https://api.alquran.cloud/v1/surah');
+            if(data) {
+                data.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah.number; 
+                    option.textContent = `${toArabicNumerals(surah.number)}. سورة ${surah.name.replace('سُورَةُ ', '')}`;
+                    surahSelect.appendChild(option);
+                });
+                
+                document.getElementById('audio-surah').addEventListener('change', updateAudioPlayer);
+                document.getElementById('audio-reciter').addEventListener('change', updateAudioPlayer);
+                audioSurahsLoaded = true;
+            }
+        }
+
+        function updateAudioPlayer() {
+            const surahId = document.getElementById('audio-surah').value;
+            const reciterCode = document.getElementById('audio-reciter').value;
+            if(!surahId) return;
+
+            const paddedSurah = String(surahId).padStart(3, '0');
+            // MP3Quran base servers mapping
+            const reciterServers = {
+                'minsh': 'server10.mp3quran.net/minsh',
+                'husr': 'server13.mp3quran.net/husr',
+                'yasser': 'server11.mp3quran.net/yasser',
+                'afs': 'server8.mp3quran.net/afs',
+                'shur': 'server7.mp3quran.net/shur'
+            };
+
+            const baseUrl = `https://${reciterServers[reciterCode]}/${paddedSurah}.mp3`;
+            const player = document.getElementById('audio-player');
+            const titleEl = document.getElementById('audio-title');
+            
+            player.src = baseUrl;
+            titleEl.innerText = `تلاوة سورة رقم ${toArabicNumerals(surahId)}`;
+            player.play().catch(e => console.log("Auto-play prevented"));
+        }
+
+
         // --- Auto Scroll (Seeker) Logic ---
-        const track = document.getElementById('scroll-track');
-        const thumb = document.getElementById('scroll-thumb');
-        const autoScrollContainer = document.getElementById('auto-scroll-container');
+        const track = document.getElementById('scroll-track'); const thumb = document.getElementById('scroll-thumb'); const autoScrollContainer = document.getElementById('auto-scroll-container');
         let isDragging = false, scrollSpeed = 0, maxScrollSpeed = 4, animationFrameId = null, scrollAccumulator = 0, seekerTimeout = null;
 
         function activateSeeker() { autoScrollContainer.classList.add('active-seeker'); if (seekerTimeout) clearTimeout(seekerTimeout); }
         function deactivateSeeker() { if (!isDragging) autoScrollContainer.classList.remove('active-seeker'); }
         function updateThumbPosition(clientY) {
-            const trackRect = track.getBoundingClientRect();
-            let y = clientY - trackRect.top;
-            y = Math.max(0, Math.min(y, trackRect.height - thumb.offsetHeight));
-            thumb.style.top = `${y}px`;
-            const percentage = y / (trackRect.height - thumb.offsetHeight);
-            scrollSpeed = percentage > 0.05 ? 0.2 + (Math.pow((percentage - 0.05) / 0.95, 2) * maxScrollSpeed) : 0;
-            if (scrollSpeed > 0 && !animationFrameId) autoScrollLoop();
-            else if (scrollSpeed === 0 && animationFrameId) resetAutoScroll();
+            const trackRect = track.getBoundingClientRect(); let y = clientY - trackRect.top; y = Math.max(0, Math.min(y, trackRect.height - thumb.offsetHeight)); thumb.style.top = `${y}px`;
+            const percentage = y / (trackRect.height - thumb.offsetHeight); scrollSpeed = percentage > 0.05 ? 0.2 + (Math.pow((percentage - 0.05) / 0.95, 2) * maxScrollSpeed) : 0;
+            if (scrollSpeed > 0 && !animationFrameId) autoScrollLoop(); else if (scrollSpeed === 0 && animationFrameId) resetAutoScroll();
         }
         function autoScrollLoop() {
-            if (scrollSpeed > 0) {
-                scrollAccumulator += scrollSpeed;
-                if (scrollAccumulator >= 1) {
-                    window.scrollBy(0, Math.floor(scrollAccumulator));
-                    scrollAccumulator -= Math.floor(scrollAccumulator);
-                }
-                const isBottom = Math.ceil(window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5;
-                animationFrameId = !isBottom ? requestAnimationFrame(autoScrollLoop) : null;
+            if (scrollSpeed > 0) { scrollAccumulator += scrollSpeed; if (scrollAccumulator >= 1) { window.scrollBy(0, Math.floor(scrollAccumulator)); scrollAccumulator -= Math.floor(scrollAccumulator); }
+                const isBottom = Math.ceil(window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5; animationFrameId = !isBottom ? requestAnimationFrame(autoScrollLoop) : null;
             } else animationFrameId = null;
         }
-        function resetAutoScroll() {
-            scrollSpeed = 0; scrollAccumulator = 0; thumb.style.top = '0px';
-            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
-        }
+        function resetAutoScroll() { scrollSpeed = 0; scrollAccumulator = 0; thumb.style.top = '0px'; if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } }
         
-        // Listeners for Scroller
-        thumb.addEventListener('mousedown', (e) => { isDragging = true; activateSeeker(); e.preventDefault(); });
-        window.addEventListener('mousemove', (e) => { if (isDragging) updateThumbPosition(e.clientY); });
-        window.addEventListener('mouseup', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
-        thumb.addEventListener('touchstart', (e) => { isDragging = true; activateSeeker(); }, {passive: false});
-        window.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); updateThumbPosition(e.touches[0].clientY); }, {passive: false});
-        window.addEventListener('touchend', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
-        track.addEventListener('click', (e) => { if (e.target === thumb) return; activateSeeker(); updateThumbPosition(e.clientY); seekerTimeout = setTimeout(deactivateSeeker, 1500); });
-        autoScrollContainer.addEventListener('touchstart', activateSeeker, {passive: true});
-        autoScrollContainer.addEventListener('mouseenter', activateSeeker);
-        autoScrollContainer.addEventListener('mouseleave', () => { seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        thumb.addEventListener('mousedown', (e) => { isDragging = true; activateSeeker(); e.preventDefault(); }); window.addEventListener('mousemove', (e) => { if (isDragging) updateThumbPosition(e.clientY); }); window.addEventListener('mouseup', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        thumb.addEventListener('touchstart', (e) => { isDragging = true; activateSeeker(); }, {passive: false}); window.addEventListener('touchmove', (e) => { if (!isDragging) return; e.preventDefault(); updateThumbPosition(e.touches[0].clientY); }, {passive: false}); window.addEventListener('touchend', () => { isDragging = false; seekerTimeout = setTimeout(deactivateSeeker, 1500); });
+        track.addEventListener('click', (e) => { if (e.target === thumb) return; activateSeeker(); updateThumbPosition(e.clientY); seekerTimeout = setTimeout(deactivateSeeker, 1500); }); autoScrollContainer.addEventListener('touchstart', activateSeeker, {passive: true}); autoScrollContainer.addEventListener('mouseenter', activateSeeker); autoScrollContainer.addEventListener('mouseleave', () => { seekerTimeout = setTimeout(deactivateSeeker, 1500); });
 
         // --- Init App ---
         window.onload = () => {
             initTheme(); 
-            
-            // Particles setup
-            particlesJS('particles-js', {
-                "particles": { "number": { "value": window.innerWidth < 768 ? 20 : 40 }, "color": { "value": "#10b981" }, "opacity": { "value": 0.3 }, "size": { "value": 2 }, "line_linked": { "enable": true, "distance": 150, "color": "#10b981", "opacity": 0.2 }, "move": { "enable": true, "speed": 1.5 } },
-                "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } } },
-                "retina_detect": true
-            });
-
-            // Re-run Notification Engine if permission is already granted, else show prompt immediately
+            particlesJS('particles-js', { "particles": { "number": { "value": window.innerWidth < 768 ? 20 : 40 }, "color": { "value": "#10b981" }, "opacity": { "value": 0.3 }, "size": { "value": 2 }, "line_linked": { "enable": true, "distance": 150, "color": "#10b981", "opacity": 0.2 }, "move": { "enable": true, "speed": 1.5 } }, "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } } }, "retina_detect": true });
             if ("Notification" in window) {
-                if (Notification.permission === "granted") {
-                    localStorage.setItem('notifs', 'on');
-                    startNotificationEngine();
-                } else if (Notification.permission !== "denied") {
-                    // Show prompt directly if permission is neither granted nor denied yet
-                    document.getElementById('notif-prompt').classList.remove('hidden');
-                }
+                if (Notification.permission === "granted") { localStorage.setItem('notifs', 'on'); startNotificationEngine(); } 
+                else if (Notification.permission !== "denied") { document.getElementById('notif-prompt').classList.remove('hidden'); }
             }
-            
-            showTab('schedule');
+            showTab('general'); // Default to General Mushaf as requested
             lucide.createIcons();
         };
     </script>
