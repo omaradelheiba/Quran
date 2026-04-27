@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>يلا نختم | الإصدار الاحترافي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* اللون الأخضر الغامق جداً الذي طلبته */
+            --forest-black: #040d04; 
+            --forest-deep: #081a08;
+            --gold: #d4af37;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-strong: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--forest-black);
+            background-image: 
+                /* الإضاءة البيضاء العلوية التي تعطي انعكاس الزيتي */
+                radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(to bottom, var(--forest-deep), var(--forest-black));
+            background-attachment: fixed;
+            color: #e2e8f0;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.3s ease;
+        }
+
+        .dark-mode {
+            --forest-black: #000000;
+            --forest-deep: #050505;
+        }
+
+        .madinah-font {
+            font-family: 'Amiri', serif;
+            line-height: 2.5;
+            font-size: 1.8rem;
+            text-align: justify;
+            text-align-last: center;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        .gold-glow {
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: black;
+            font-weight: 900;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .nav-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 1rem;
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+
+        .nav-btn.active {
+            opacity: 1;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .verse-num {
+            color: var(--gold);
+            font-family: sans-serif;
+            font-size: 1.1rem;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Notifications Prompt -->
+    <div id="notif-prompt" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card p-8 max-w-md w-full text-center border-t-2 border-yellow-500">
+            <div class="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="bell-ring" class="w-10 h-10 text-yellow-500 animate-bounce"></i>
+            </div>
+            <h2 class="text-2xl font-black mb-3">تفعيل التنبيهات</h2>
+            <p class="opacity-70 mb-8 leading-relaxed">سنقوم بتذكيرك بأورادك (4 مرات يومياً) لتثبيت الحفظ ونيل البركة.</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="enableNotifications()" class="btn-gold py-4 rounded-2xl">تفعيل الآن</button>
+                <button onclick="hideNotifPrompt()" class="opacity-40 text-sm">تذكيري لاحقاً</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <header class="max-w-5xl mx-auto flex flex-col items-center mb-10 relative z-10">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 btn-gold rounded-2xl flex items-center justify-center">
+                <i data-lucide="book-open-check" class="w-7 h-7"></i>
+            </div>
+            <h1 class="text-4xl font-black gold-glow tracking-tighter">يلا نختم</h1>
+        </div>
+
+        <nav class="w-full glass-card p-2 flex justify-between items-center gap-2 overflow-x-auto no-scrollbar">
+            <div class="flex gap-1">
+                <button onclick="showTab('schedule')" id="tab-btn-schedule" class="nav-btn active">المجدول</button>
+                <button onclick="showTab('general')" id="tab-btn-general" class="nav-btn">المصحف العام</button>
+                <button onclick="showTab('review')" id="tab-btn-review" class="nav-btn">المراجعة</button>
+            </div>
+            <div class="flex gap-1">
+                <button onclick="toggleTheme()" class="p-3 opacity-60 hover:opacity-100 transition"><i data-lucide="moon" id="theme-ico"></i></button>
+                <button onclick="showTab('settings')" id="tab-btn-settings" class="p-3 opacity-60 hover:opacity-100 transition"><i data-lucide="settings"></i></button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-5xl mx-auto relative z-10">
+
+        <!-- 1. Schedule View -->
+        <div id="view-schedule" class="view-content">
+            <div id="no-db-alert" class="glass-card p-16 text-center hidden">
+                <i data-lucide="layout-list" class="w-16 h-16 mx-auto mb-6 opacity-10"></i>
+                <h3 class="text-2xl font-bold mb-6">أهلاً بك.. لم تقم باختيار نظام بعد</h3>
+                <button onclick="showTab('settings')" class="btn-gold px-10 py-4 rounded-2xl">اختر نظام الحفظ وابدأ</button>
+            </div>
+
+            <div id="schedule-active" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-card p-8 border-l-4 border-yellow-600">
+                        <span class="text-[10px] uppercase tracking-widest opacity-50 block mb-2" id="plan-label">نظام الصفحة</span>
+                        <h2 class="text-3xl font-black gold-glow mb-4" id="task-title">---</h2>
+                        <div class="bg-white/5 p-4 rounded-2xl mb-8">
+                            <p class="text-xs opacity-40 mb-1">التقدم الحالي</p>
+                            <div class="flex items-center gap-3">
+                                <div class="flex-grow h-2 bg-white/10 rounded-full overflow-hidden">
+                                    <div id="progress-bar" class="h-full btn-gold w-[5%] transition-all duration-1000"></div>
+                                </div>
+                                <span class="text-xs font-bold" id="progress-text">0%</span>
+                            </div>
+                        </div>
+                        <button onclick="markDone()" class="w-full btn-gold py-5 rounded-2xl text-xl flex items-center justify-center gap-3 active:scale-95">
+                            <i data-lucide="check-circle"></i> أتممت الحفظ
+                        </button>
+                    </div>
+                    <div class="glass-card p-6 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] opacity-40 uppercase">إجمالي المحفوظ</p>
+                            <p class="text-2xl font-black gold-glow" id="stat-total">0</p>
+                        </div>
+                        <i data-lucide="award" class="w-10 h-10 opacity-20"></i>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 glass-card p-8 md:p-12 min-h-[60vh]">
+                    <div id="quran-render" class="madinah-font"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. General Mushaf View -->
+        <div id="view-general" class="view-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="md:col-span-1 glass-card p-4 h-[70vh] flex flex-col">
+                    <div class="relative mb-4">
+                        <i data-lucide="search" class="absolute right-3 top-3 w-4 h-4 opacity-40"></i>
+                        <input type="text" id="srch" placeholder="بحث عن سورة..." class="w-full bg-black/40 border border-white/5 rounded-xl py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-yellow-600">
+                    </div>
+                    <div id="s-list" class="overflow-y-auto space-y-1 flex-grow no-scrollbar"></div>
+                </div>
+                <div class="md:col-span-3 glass-card p-8 md:p-12 h-[70vh] overflow-y-auto no-scrollbar relative">
+                    <h2 id="g-title" class="text-3xl font-black text-center mb-10 gold-glow">المصحف الشريف</h2>
+                    <div id="g-render" class="madinah-font"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Review View -->
+        <div id="view-review" class="view-content hidden">
+            <div class="glass-card p-8 mb-8 flex items-center justify-between">
+                <div>
+                    <h2 class="text-3xl font-black gold-glow">سجل المراجعة</h2>
+                    <p class="opacity-50 text-sm mt-1">كل ما أتممت حفظه يتم أرشفته هنا تلقائياً.</p>
+                </div>
+                <i data-lucide="history" class="w-12 h-12 opacity-10"></i>
+            </div>
+            <div id="rev-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            <div id="rev-full-view" class="glass-card p-8 md:p-12 mt-8 hidden relative">
+                <button onclick="this.parentElement.classList.add('hidden')" class="absolute top-4 left-4 p-2 opacity-30 hover:opacity-100"><i data-lucide="x"></i></button>
+                <div id="rev-render" class="madinah-font"></div>
+            </div>
+        </div>
+
+        <!-- 4. Settings View -->
+        <div id="view-settings" class="view-content hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black gold-glow">اختر نظامك الجديد</h2>
+                <p class="opacity-50 mt-2">تغيير النظام سيؤدي لمسح التقدم الحالي وتعيين نظام جديد.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Plan A -->
+                <div class="glass-card p-8 border-t-4 border-yellow-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('page')">
+                    <h3 class="text-2xl font-black mb-4">صفحة يومياً</h3>
+                    <p class="text-sm opacity-60 leading-relaxed mb-6">حفظ صفحة كاملة يومياً (604 ورد). الالتزام يبدأ بعد صلاة الفجر للبركة القصوى.</p>
+                    <div class="text-xs font-bold gold-glow uppercase">تفعيل النظام</div>
+                </div>
+                <!-- Plan B -->
+                <div class="glass-card p-8 border-t-4 border-emerald-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('amma')">
+                    <h3 class="text-2xl font-black mb-4">جزء عمّ</h3>
+                    <p class="text-sm opacity-60 leading-relaxed mb-6">من سورة الناس صعوداً. مثالي لمن يريد البدء بقصار السور وتثبيتها أولاً.</p>
+                    <div class="text-xs font-bold text-emerald-500 uppercase">تفعيل النظام</div>
+                </div>
+                <!-- Plan C -->
+                <div class="glass-card p-8 border-t-4 border-blue-500 hover:bg-white/5 transition cursor-pointer" onclick="initPlan('five')">
+                    <h3 class="text-2xl font-black mb-4">5 آيات فقط</h3>
+                    <p class="text-sm opacity-60 leading-relaxed mb-6">حفظ 5 آيات في كل ورد. نظام مريح يضمن الاستمرارية وعدم الانقطاع.</p>
+                    <div class="text-xs font-bold text-blue-500 uppercase">تفعيل النظام</div>
+                </div>
+            </div>
+            <div class="mt-20 text-center border-t border-white/5 pt-10">
+                <button onclick="hardReset()" class="text-red-500/50 hover:text-red-500 text-xs flex items-center gap-2 mx-auto">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> مسح كافة البيانات وإعادة الضبط
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-10 right-10 btn-gold px-6 py-3 rounded-2xl shadow-2xl z-[2000] translate-y-32 opacity-0 transition-all duration-500 font-bold"></div>
+
+    <script>
+        lucide.createIcons();
+        let qMeta = [];
+
+        // --- Database Logic ---
+        const DB = {
+            get: () => JSON.parse(localStorage.getItem('nakhtem_core')) || null,
+            save: (data) => localStorage.setItem('nakhtem_core', JSON.stringify(data))
+        };
+
+        function initPlan(type) {
+            const data = {
+                plan: type,
+                current: type === 'amma' ? 114 : 1,
+                history: [],
+                joined: new Date().toISOString()
+            };
+            DB.save(data);
+            showToast("تم تفعيل النظام بنجاح.. بالتوفيق!");
+            setTimeout(() => showTab('schedule'), 500); // إظهار التبويب فوراً بدون لودر الصفحة
+        }
+
+        function hardReset() {
+            if(confirm("هل أنت متأكد؟ سيتم حذف كل شيء.")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // --- Notifications ---
+        function enableNotifications() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(p => {
+                    if (p === 'granted') {
+                        localStorage.setItem('notifs', 'on');
+                        hideNotifPrompt();
+                        new Notification("يلا نختم", { body: "تم تفعيل التنبيهات.. سنرافقك في رحلة الحفظ." });
+                    }
+                });
+            }
+        }
+
+        function hideNotifPrompt() {
+            document.getElementById('notif-prompt').classList.add('hidden');
+            localStorage.setItem('notif_seen', 'true');
+        }
+
+        // --- UI Switching ---
+        function showTab(id) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            document.getElementById(`view-${id}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`tab-btn-${id}`);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            if(id === 'schedule') renderSchedule();
+            if(id === 'general') fetchGeneral();
+            if(id === 'review') renderReview();
+            lucide.createIcons();
+        }
+
+        // --- Schedule Logic ---
+        async function renderSchedule() {
+            const data = DB.get();
+            if(!data) {
+                document.getElementById('no-db-alert').classList.remove('hidden');
+                document.getElementById('schedule-active').classList.add('hidden');
+                return;
+            }
+            document.getElementById('no-db-alert').classList.add('hidden');
+            document.getElementById('schedule-active').classList.remove('hidden');
+            
+            // UI Stats
+            document.getElementById('stat-total').innerText = data.history.length;
+            document.getElementById('plan-label').innerText = `نظام: ${data.plan === 'page' ? 'الصفحة الواحدة' : (data.plan === 'amma' ? 'جزء عمّ' : 'الخمس آيات')}`;
+            
+            const render = document.getElementById('quran-render');
+            render.innerHTML = '<div class="flex justify-center py-20"><div class="spinner"></div></div>';
+
+            try {
+                let url = '';
+                if(data.plan === 'page') {
+                    document.getElementById('task-title').innerText = `الصفحة ${data.current}`;
+                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?page_number=${data.current}`;
+                } else if(data.plan === 'amma') {
+                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${data.current}`;
+                } else {
+                    url = `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=2`;
+                }
+
+                const res = await fetch(url);
+                const json = await res.json();
+                
+                if(data.plan === 'amma') {
+                    const chRes = await fetch(`https://api.quran.com/api/v4/chapters/${data.current}?language=ar`);
+                    const chData = await chRes.json();
+                    document.getElementById('task-title').innerText = chData.chapter.name_arabic;
+                }
+
+                let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+                json.verses.forEach(v => {
+                    html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
+                });
+                render.innerHTML = html;
+                
+                // Progress Bar Sim
+                const prog = (data.history.length / 604) * 100;
+                document.getElementById('progress-bar').style.width = `${Math.max(5, prog)}%`;
+                document.getElementById('progress-text').innerText = `${Math.floor(prog)}%`;
+
+            } catch(e) {
+                render.innerHTML = '<p class="text-center opacity-40">تأكد من اتصالك بالإنترنت لجلب الآيات</p>';
+            }
+        }
+
+        function markDone() {
+            const data = DB.get();
+            data.history.push({ step: data.current, type: data.plan, date: new Date() });
+            
+            if(data.plan === 'page') data.current++;
+            else if(data.plan === 'amma') data.current--;
+            else data.current++; // logic for 5 ayat can be expanded
+
+            DB.save(data);
+            showToast("مبارك! تم تسجيل الحفظ بنجاح.");
+            renderSchedule();
+        }
+
+        // --- General Mushaf ---
+        async function fetchGeneral() {
+            if(qMeta.length > 0) return;
+            const res = await fetch('https://api.quran.com/api/v4/chapters?language=ar');
+            const data = await res.json();
+            qMeta = data.chapters;
+            renderSList(qMeta);
+        }
+
+        function renderSList(list) {
+            const container = document.getElementById('s-list');
+            container.innerHTML = '';
+            list.forEach(s => {
+                const b = document.createElement('button');
+                b.className = "w-full text-right p-3 rounded-xl hover:bg-white/5 transition flex justify-between items-center border-b border-white/5";
+                b.innerHTML = `<span class="opacity-20 text-xs font-mono">${s.id}</span><span class="font-bold">${s.name_arabic}</span>`;
+                b.onclick = () => loadSContent(s.id, s.name_arabic);
+                container.appendChild(b);
+            });
+        }
+
+        async function loadSContent(id, name) {
+            document.getElementById('g-title').innerText = name;
+            const render = document.getElementById('g-render');
+            render.innerHTML = '<div class="flex justify-center py-20"><div class="spinner"></div></div>';
+            const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
+            const data = await res.json();
+            let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+            data.verses.forEach(v => {
+                html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
+            });
+            render.innerHTML = html;
+        }
+
+        document.getElementById('srch').oninput = (e) => {
+            renderSList(qMeta.filter(s => s.name_arabic.includes(e.target.value)));
+        };
+
+        // --- Review Tab ---
+        function renderReview() {
+            const data = DB.get();
+            const grid = document.getElementById('rev-grid');
+            grid.innerHTML = '';
+            if(!data || data.history.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center opacity-20 py-20">لا توجد أوراد محفوظة للمراجعة بعد</p>';
+                return;
+            }
+            [...data.history].reverse().forEach(h => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-4 text-center cursor-pointer hover:border-yellow-500/50 transition";
+                card.innerHTML = `
+                    <p class="text-[10px] opacity-30 mb-1">${new Date(h.date).toLocaleDateString('ar-EG')}</p>
+                    <h4 class="font-bold gold-glow">${h.type === 'page' ? 'صفحة ' + h.step : 'سورة رقم ' + h.step}</h4>
+                `;
+                card.onclick = () => showFullReview(h.step, h.type);
+                grid.appendChild(card);
+            });
+        }
+
+        async function showFullReview(step, type) {
+            const full = document.getElementById('rev-full-view');
+            const render = document.getElementById('rev-render');
+            full.classList.remove('hidden');
+            render.innerHTML = '<div class="spinner mx-auto"></div>';
+            
+            let url = type === 'page' ? `https://api.quran.com/api/v4/quran/verses/uthmani?page_number=${step}` : `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${step}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            let html = '<div class="text-center mb-10 gold-glow font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+            data.verses.forEach(v => {
+                html += `<span>${v.text_uthmani}</span> <span class="verse-num">﴿${v.verse_key.split(':')[1]}﴾</span> `;
+            });
+            render.innerHTML = html;
+        }
+
+        // --- Theme & Extras ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('theme-ico').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
+        }
+
+        window.onload = () => {
+            if(!localStorage.getItem('notif_seen')) {
+                setTimeout(() => document.getElementById('notif-prompt').classList.remove('hidden'), 2000);
+            }
+            showTab('schedule');
+        };
+    </script>
+</body>
+</html>
