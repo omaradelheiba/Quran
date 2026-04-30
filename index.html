@@ -130,19 +130,42 @@
         }
         .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* --- Quran Typography --- */
+        /* --- Quran Typography & Interactions --- */
         .quran-text {
             font-family: 'Amiri Quran', serif !important; direction: rtl;
-            text-align: justify; text-align-last: center; line-height: 2.4; 
+            text-align: justify; text-align-last: center; line-height: 2.6; 
             color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
-        .ayah-wrapper { display: inline; position: relative; }
+        .ayah-wrapper { 
+            display: inline; position: relative; border-radius: 0.5rem; 
+            transition: all 0.3s ease; 
+        }
+        .ayah-wrapper.playing { 
+            background-color: rgba(212, 175, 55, 0.15); color: #FBE8A6; 
+        }
+        
+        /* Interactive Chunk Styles (FIXED SPACING) */
+        .chunk-item {
+            display: inline; 
+            transition: all 0.2s; cursor: pointer; border-radius: 0.2rem;
+        }
+        .chunk-item:hover {
+            color: var(--brand-neon); background: rgba(16, 185, 129, 0.1);
+        }
+        .chunk-playing {
+            color: var(--brand-neon) !important; 
+            background: rgba(16, 185, 129, 0.2); 
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
         .ayah-number {
             display: inline-block; margin: 0 6px; color: #D4AF37; 
             font-size: 0.9em; position: relative; top: -2px;
             font-family: 'Amiri Quran', serif !important;
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            cursor: pointer; transition: color 0.3s, transform 0.2s;
         }
+        .ayah-number:hover { color: var(--brand-neon); transform: scale(1.2); }
 
         .surah-frame {
             position: relative; padding: 2rem 1rem; margin: 4rem auto 2rem;
@@ -299,6 +322,35 @@
     <div class="glow-orb orb-2"></div>
     <div class="glow-orb orb-3"></div>
 
+    <!-- Ayah Actions Menu (Floating Glass) -->
+    <div id="ayah-action-menu" class="absolute hidden bg-brand-dark/95 backdrop-blur-xl border border-brand-neon/40 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] p-2 flex gap-2 z-[90] transition-opacity duration-200" onclick="event.stopPropagation()">
+        <!-- Audio -->
+        <button onclick="triggerAyahAudio()" class="w-12 h-12 rounded-xl bg-brand-main text-brand-goldLight hover:bg-brand-neon hover:text-white flex items-center justify-center transition-colors shadow-inner" title="تلاوة الآية">
+            <i class="fa-solid fa-play text-xl"></i>
+        </button>
+        <!-- Tafsir -->
+        <button onclick="triggerAyahTafsir()" class="w-12 h-12 rounded-xl bg-brand-main text-brand-goldLight hover:bg-[#60a5fa] hover:text-white flex items-center justify-center transition-colors shadow-inner" title="التفسير الميسر">
+            <i class="fa-solid fa-book-open text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Tafsir Modal (Glass Popup) -->
+    <div id="tafsir-modal" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden" onclick="closeTafsir()">
+        <div class="glass-card p-6 md:p-8 max-w-2xl w-[90%] text-center border-t-2 border-brand-neon relative" onclick="event.stopPropagation()">
+            <button onclick="closeTafsir()" class="absolute top-4 right-4 text-brand-goldLight hover:text-white text-2xl transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 bg-brand-dark rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(16,185,129,0.4)] border border-brand-neon">
+                <i class="fa-solid fa-book-open text-brand-goldLight text-2xl"></i>
+            </div>
+            <h2 class="text-xl md:text-2xl font-black mb-2 text-brand-goldLight" id="tafsir-title">التفسير الميسر</h2>
+            <div class="h-px bg-brand-light/50 w-1/2 mx-auto mb-6"></div>
+            <div class="bg-brand-dark/50 p-4 rounded-xl border border-brand-light/20 shadow-inner max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <p id="tafsir-text" class="text-sm md:text-lg leading-loose text-gray-200 font-sans"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Navigation Menu (Drawer) -->
     <div id="mobile-menu-overlay" class="fixed inset-0 z-[200] bg-black/60 hidden opacity-0 transition-opacity duration-300" onclick="toggleMobileMenu()"></div>
     <div id="mobile-menu-drawer" class="fixed top-0 right-0 h-full w-64 glass-card border-l border-t-0 border-b-0 border-r-0 rounded-none z-[210] transform translate-x-full transition-transform duration-300 flex flex-col pt-20 px-6 gap-3">
@@ -408,10 +460,37 @@
                 <div id="general-loading" class="text-center py-20 hidden"><div class="spinner"></div></div>
 
                 <!-- Content Area -->
-                <div id="quran-render-general" class="quran-text transition-all duration-300">
+                <div id="quran-render-general" class="quran-text transition-all duration-300 pb-20">
                     <div class="text-center py-20 opacity-50">
                         <i class="fa-solid fa-book-open-reader text-5xl md:text-6xl mb-4 text-brand-neon"></i>
                         <p class="text-lg md:text-xl font-bold mt-4">الرجاء اختيار سورة أو جزء للبدء في القراءة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Audio Trigger (FAB) -->
+            <button id="general-audio-fab" onclick="toggleGeneralAudioPopup()" class="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-14 h-14 bg-brand-neon text-white rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] flex items-center justify-center text-2xl hover:scale-110 transition-transform z-40 hidden" title="إظهار/إخفاء مشغل المصحف الناطق">
+                <i class="fa-solid fa-headphones"></i>
+            </button>
+
+            <!-- Hidden Audio Popup -->
+            <div id="general-audio-popup" class="fixed bottom-0 left-0 right-0 md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[600px] bg-brand-dark/95 backdrop-blur-xl border-t md:border border-brand-neon/30 p-4 shadow-2xl z-50 transition-transform duration-500 translate-y-full md:translate-y-[150%] md:rounded-2xl flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-1 px-2">
+                    <span class="text-brand-goldLight font-bold text-sm" id="gen-audio-info">استمع للتلاوة الآية بالآية</span>
+                    <button onclick="toggleGeneralAudioPopup()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleGeneralPlay()" id="btn-gen-play" class="w-12 h-12 bg-brand-neon text-white rounded-full flex items-center justify-center text-xl shadow-lg hover:bg-brand-glow transition-colors shrink-0">
+                        <i class="fa-solid fa-play ml-1"></i>
+                    </button>
+                    <div class="flex-grow">
+                        <select id="general-reciter-select" class="w-full bg-black/50 border border-brand-light/50 rounded-xl px-3 py-2 text-white outline-none text-sm font-bold">
+                            <!-- Options filled dynamically -->
+                        </select>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="genAudioNext()" class="w-10 h-10 bg-brand-main/50 text-brand-goldLight rounded-full flex items-center justify-center hover:bg-brand-main transition-colors"><i class="fa-solid fa-backward-step"></i></button>
+                        <button onclick="genAudioPrev()" class="w-10 h-10 bg-brand-main/50 text-brand-goldLight rounded-full flex items-center justify-center hover:bg-brand-main transition-colors"><i class="fa-solid fa-forward-step"></i></button>
                     </div>
                 </div>
             </div>
@@ -534,12 +613,31 @@
                         </button>
                     </div>
 
-                    <div class="md:col-span-3 glass-card p-4 md:p-10 min-h-[60vh] relative overflow-hidden">
+                    <div class="md:col-span-3 glass-card p-4 md:p-10 min-h-[60vh] relative overflow-hidden flex flex-col">
+                        
+                        <!-- Audio Controls for Schedule (Chunk Interactive) -->
+                        <div class="bg-brand-dark/50 p-4 rounded-xl border border-brand-light/30 mb-6 flex flex-col md:flex-row items-center gap-4 justify-between shadow-inner">
+                            <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                                <button id="btn-toggle-audio" onclick="toggleScheduleAudio()" class="w-full md:w-auto bg-brand-dark border border-brand-light/50 text-white hover:bg-brand-main px-5 py-3 rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+                                    <i id="audio-toggle-icon" class="fa-solid fa-volume-xmark text-red-400"></i>
+                                    <span id="audio-toggle-text">تفعيل الصوت</span>
+                                </button>
+                                <div class="w-full md:w-56 transition-opacity duration-300" id="schedule-reciter-container" style="opacity: 0.5; pointer-events: none;">
+                                    <select id="schedule-reciter" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-3 py-3 text-white outline-none text-sm font-bold">
+                                        <!-- Populated dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-xs md:text-sm text-brand-neon bg-brand-neon/10 px-4 py-3 rounded-xl border border-brand-neon/30 text-center md:text-right w-full md:w-auto leading-relaxed shadow-sm">
+                                <i class="fa-solid fa-circle-check ml-1"></i> <strong>النظام الذكي:</strong> اضغط على <strong>أي مقطع للكلمات</strong> لتقسيم التلاوة، أو اضغط على <strong>رقم الآية ﴿١﴾</strong> لسماعها كاملة.
+                            </div>
+                        </div>
+
                         <div id="schedule-loading" class="text-center py-20 hidden">
                             <div class="spinner"></div>
                             <p class="text-brand-goldLight mt-4 font-bold text-sm md:text-base">جاري جلب الورد المخصص لك...</p>
                         </div>
-                        <div id="quran-render-schedule" class="quran-text transition-all duration-300"></div>
+                        <div id="quran-render-schedule" class="quran-text transition-all duration-300 flex-grow"></div>
                     </div>
                 </div>
             </div>
@@ -588,11 +686,7 @@
                         <div>
                             <label class="text-xs text-brand-glow mb-2 block font-bold">اختر القارئ</label>
                             <select id="audio-reciter" class="w-full bg-brand-dark border border-brand-light/50 rounded-xl px-4 py-3 text-white outline-none">
-                                <option value="minsh">محمد صديق المنشاوي</option>
-                                <option value="husr">محمود خليل الحصري</option>
-                                <option value="yasser">ياسر الدوسري</option>
-                                <option value="afs">مشاري راشد العفاسي</option>
-                                <option value="shur">سعود الشريم</option>
+                                <!-- Populated dynamically -->
                             </select>
                         </div>
                     </div>
@@ -657,7 +751,7 @@
                             <i class="fa-solid fa-bullhorn mr-1"></i> تجربة الإشعارات الآن
                         </button>
                         <button onclick="enableNotifications()" class="text-sm bg-brand-dark hover:bg-brand-main text-white py-2 px-6 rounded-lg transition-colors border border-brand-light/30">
-                            فحص صلاحية الإشعارات بالمتصفح
+                            تفعيل الإشعارات بالمتصفح
                         </button>
                     </div>
                 </div>
@@ -726,6 +820,59 @@
             document.getElementById('quran-render-general'),
             document.getElementById('quran-render-review')
         ];
+
+        // --- List of Reciters (Unified with everyayah IDs) ---
+        const RECITER_LIST = [
+            { id: 'Alafasy_128kbps', mp3q: 'server8.mp3quran.net/afs', name: 'مشاري راشد العفاسي' },
+            { id: 'Minshawy_Murattal_128kbps', mp3q: 'server10.mp3quran.net/minsh', name: 'محمد صديق المنشاوي' },
+            { id: 'Husary_128kbps', mp3q: 'server13.mp3quran.net/husr', name: 'محمود خليل الحصري' },
+            { id: 'Yaser_Ad-Dussary_128kbps', mp3q: 'server11.mp3quran.net/yasser', name: 'ياسر الدوسري' },
+            { id: 'Saood_ash-Shuraym_128kbps', mp3q: 'server7.mp3quran.net/shur', name: 'سعود الشريم' },
+            { id: 'Abdurrahmaan_As-Sudais_192kbps', mp3q: 'server11.mp3quran.net/sds', name: 'عبدالرحمن السديس' },
+            { id: 'MaherAlMuaiqly128kbps', mp3q: 'server12.mp3quran.net/maher', name: 'ماهر المعيقلي' },
+            { id: 'Abdul_Basit_Murattal_192kbps', mp3q: 'server7.mp3quran.net/basit', name: 'عبدالباسط عبدالصمد (مرتل)' },
+            { id: 'Saad_Al_Ghamdi_128kbps', mp3q: 'server7.mp3quran.net/s_gmd', name: 'سعد الغامدي' },
+            { id: 'Hudhaify_128kbps', mp3q: 'server9.mp3quran.net/hthfi', name: 'علي الحذيفي' },
+            { id: 'Nasser_Alqatami_128kbps', mp3q: 'server11.mp3quran.net/qtm', name: 'ناصر القطامي' },
+            { id: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net', mp3q: 'server10.mp3quran.net/ajm', name: 'أحمد بن علي العجمي' },
+            { id: 'Fares_Abbad_64kbps', mp3q: 'server8.mp3quran.net/frs_a', name: 'فارس عباد' },
+            { id: 'Muhammad_Jibreel_128kbps', mp3q: 'server8.mp3quran.net/jbrl', name: 'محمد جبريل' },
+            { id: 'Ayman_Sowaid_64kbps', mp3q: 'server14.mp3quran.net/ayman', name: 'أيمن سويد' }
+        ];
+
+        // --- Helper Function for URL padding ---
+        const padNum = (num) => String(num).padStart(3, '0');
+
+        function initReciters() {
+            const scheduleSelect = document.getElementById('schedule-reciter');
+            const reviewSelect = document.getElementById('audio-reciter');
+            const generalSelect = document.getElementById('general-reciter-select');
+            
+            if(reviewSelect) reviewSelect.innerHTML = '';
+            if(scheduleSelect) scheduleSelect.innerHTML = '';
+            if(generalSelect) generalSelect.innerHTML = '';
+
+            RECITER_LIST.forEach(reciter => {
+                if(scheduleSelect) {
+                    const opt1 = document.createElement('option');
+                    opt1.value = reciter.id;
+                    opt1.textContent = reciter.name;
+                    scheduleSelect.appendChild(opt1);
+                }
+                if(generalSelect) {
+                    const optGen = document.createElement('option');
+                    optGen.value = reciter.id;
+                    optGen.textContent = reciter.name;
+                    generalSelect.appendChild(optGen);
+                }
+                if(reviewSelect) {
+                    const opt2 = document.createElement('option');
+                    opt2.value = reciter.mp3q; 
+                    opt2.textContent = reciter.name;
+                    reviewSelect.appendChild(opt2);
+                }
+            });
+        }
         
         function updateFontSizes() {
             renderContainers.forEach(c => { if(c) c.style.fontSize = `${currentFontSize}px`; });
@@ -869,6 +1016,10 @@
 
         function enableNotifications() {
             if ("Notification" in window) {
+                if (Notification.permission === "denied") {
+                    showToast("الإشعارات محظورة. يرجى إعطاء الصلاحية من إعدادات المتصفح (أيقونة القفل بجوار الرابط أعلى الشاشة).");
+                    return;
+                }
                 Notification.requestPermission().then(p => {
                     if (p === 'granted') {
                         localStorage.setItem('notifs', 'on');
@@ -940,6 +1091,305 @@
             }, 20000); 
         }
 
+        // --- Audio Logic (Schedule Tab: Chunk-by-Chunk & Full Ayah) ---
+        let isScheduleAudioActive = false;
+        let currentAyahQueue = []; 
+        let currentPlayingAyahIndex = -1;
+        let chunkStopTime = 0;
+        
+        const scheduleAudioPlayer = new Audio(); // Unified audio player for the selected reciter
+
+        function toggleScheduleAudio() {
+            const btn = document.getElementById('btn-toggle-audio');
+            const icon = document.getElementById('audio-toggle-icon');
+            const text = document.getElementById('audio-toggle-text');
+            const reciterContainer = document.getElementById('schedule-reciter-container');
+            
+            isScheduleAudioActive = !isScheduleAudioActive;
+            
+            if(isScheduleAudioActive) {
+                reciterContainer.style.opacity = '1';
+                reciterContainer.style.pointerEvents = 'auto';
+                
+                btn.classList.add('bg-brand-main', 'border-brand-neon');
+                btn.classList.remove('bg-brand-dark', 'border-brand-light/50');
+                icon.className = 'fa-solid fa-volume-high text-brand-neon';
+                text.innerText = 'إيقاف الصوت';
+                showToast("تم تفعيل الصوت بنجاح.");
+            } else {
+                reciterContainer.style.opacity = '0.5';
+                reciterContainer.style.pointerEvents = 'none';
+                
+                btn.classList.remove('bg-brand-main', 'border-brand-neon');
+                btn.classList.add('bg-brand-dark', 'border-brand-light/50');
+                icon.className = 'fa-solid fa-volume-xmark text-red-400';
+                text.innerText = 'تفعيل الصوت';
+                
+                scheduleAudioPlayer.pause();
+                chunkStopTime = 0;
+                removeAyahHighlight();
+                removeChunkHighlight();
+            }
+        }
+
+        scheduleAudioPlayer.addEventListener('timeupdate', () => {
+            if (chunkStopTime > 0 && scheduleAudioPlayer.currentTime >= chunkStopTime) {
+                scheduleAudioPlayer.pause();
+                chunkStopTime = 0;
+                removeChunkHighlight();
+            }
+        });
+
+        scheduleAudioPlayer.addEventListener('ended', () => {
+            if (chunkStopTime === 0 && currentPlayingAyahIndex !== -1) {
+                playScheduleAyahByIndex(currentPlayingAyahIndex + 1);
+            }
+        });
+
+        function playChunkAudio(globalNum, startRatio, endRatio, element) {
+            if(!isScheduleAudioActive) {
+                showToast("يرجى تفعيل الصوت أولاً من الزر بالأعلى.");
+                return;
+            }
+
+            const index = currentAyahQueue.findIndex(a => a.number === globalNum);
+            if(index !== -1) {
+                const ayah = currentAyahQueue[index];
+                const reciter = document.getElementById('schedule-reciter').value || 'Alafasy_128kbps';
+                const audioUrl = `https://everyayah.com/data/${reciter}/${padNum(ayah.surah.number)}${padNum(ayah.numberInSurah)}.mp3`;
+
+                if(scheduleAudioPlayer.src !== audioUrl) scheduleAudioPlayer.src = audioUrl;
+
+                currentPlayingAyahIndex = -1;
+                removeAyahHighlight();
+                removeChunkHighlight();
+                if(element) element.classList.add('chunk-playing');
+
+                const executePlay = () => {
+                    let dur = scheduleAudioPlayer.duration;
+                    if(isFinite(dur)) {
+                        scheduleAudioPlayer.currentTime = Math.max(0, (dur * startRatio) - 0.1);
+                        chunkStopTime = (dur * endRatio) + 0.35;
+                        scheduleAudioPlayer.play().catch(e => console.error(e));
+                    }
+                };
+
+                if (scheduleAudioPlayer.readyState >= 1) executePlay();
+                else { scheduleAudioPlayer.onloadedmetadata = executePlay; scheduleAudioPlayer.load(); }
+            }
+        }
+
+        function playScheduleAyahAudio(globalNumber) {
+            if(!isScheduleAudioActive) {
+                showToast("يرجى تفعيل الصوت أولاً من الزر بالأعلى.");
+                return;
+            }
+            const index = currentAyahQueue.findIndex(a => a.number === globalNumber);
+            if(index !== -1) {
+                chunkStopTime = 0;
+                playScheduleAyahByIndex(index); 
+            }
+        }
+
+        function playScheduleAyahByIndex(index) {
+            if (index < 0 || index >= currentAyahQueue.length) {
+                removeAyahHighlight(); return; 
+            }
+            currentPlayingAyahIndex = index;
+            chunkStopTime = 0; 
+            removeChunkHighlight();
+            
+            const ayah = currentAyahQueue[index];
+            const reciter = document.getElementById('schedule-reciter').value || 'Alafasy_128kbps';
+            const audioUrl = `https://everyayah.com/data/${reciter}/${padNum(ayah.surah.number)}${padNum(ayah.numberInSurah)}.mp3`;
+            
+            scheduleAudioPlayer.src = audioUrl;
+            scheduleAudioPlayer.play().catch(e => { console.error("Audio playback failed", e); });
+            
+            highlightAyah(ayah.number, 'schedule');
+        }
+
+        // --- Audio & Tafsir Logic (General Tab) ---
+        let generalAyahQueue = [];
+        let generalPlayingIndex = -1;
+        const generalAudioPlayer = new Audio();
+        let isGeneralAudioPopupOpen = false;
+        let selectedAyahGlobal = null;
+
+        // Ayah Action Menu (Tafsir / Audio)
+        function showAyahActions(globalNumber, event) {
+            event.stopPropagation();
+            selectedAyahGlobal = globalNumber;
+            
+            const menu = document.getElementById('ayah-action-menu');
+            menu.classList.remove('hidden');
+            
+            const menuWidth = 120; 
+            const menuHeight = 60; 
+            
+            let posX = event.pageX - (menuWidth / 2);
+            let posY = event.pageY - menuHeight - 15; 
+            
+            if(posX < 10) posX = 10;
+            if(posX + menuWidth > window.innerWidth - 10) posX = window.innerWidth - menuWidth - 10;
+            if(posY < window.scrollY + 10) posY = event.pageY + 20; 
+            
+            menu.style.left = `${posX}px`;
+            menu.style.top = `${posY}px`;
+            
+            // Dim other ayahs for focus
+            document.querySelectorAll('#quran-render-general .ayah-wrapper').forEach(span => {
+                span.style.opacity = '0.4';
+            });
+            const currentAyah = document.getElementById(`ayah-general-${globalNumber}`);
+            if(currentAyah) {
+                currentAyah.style.opacity = '1';
+                currentAyah.style.position = 'relative';
+                currentAyah.style.zIndex = '10';
+            }
+        }
+
+        function hideAyahActions() {
+            const menu = document.getElementById('ayah-action-menu');
+            if(!menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                document.querySelectorAll('#quran-render-general .ayah-wrapper').forEach(span => {
+                    span.style.opacity = '1';
+                    span.style.zIndex = '1';
+                });
+            }
+        }
+
+        document.addEventListener('click', hideAyahActions);
+
+        // Actions
+        function triggerAyahAudio() {
+            hideAyahActions();
+            if(selectedAyahGlobal !== null) {
+                playGeneralAyahByGlobalNumber(selectedAyahGlobal);
+            }
+        }
+
+        function triggerAyahTafsir() {
+            hideAyahActions();
+            if(selectedAyahGlobal !== null) {
+                const index = generalAyahQueue.findIndex(a => a.number === selectedAyahGlobal);
+                if(index !== -1) {
+                    const ayah = generalAyahQueue[index];
+                    document.getElementById('tafsir-title').innerText = `تفسير الآية ﴿${toArabicNumerals(ayah.numberInSurah)}﴾`;
+                    document.getElementById('tafsir-text').innerText = ayah.tafsir || "التفسير غير متوفر للأسف في هذه اللحظة.";
+                    document.getElementById('tafsir-modal').classList.remove('hidden');
+                }
+            }
+        }
+
+        function closeTafsir() {
+            document.getElementById('tafsir-modal').classList.add('hidden');
+        }
+
+        // Bottom Player General
+        function toggleGeneralAudioPopup() {
+            const popup = document.getElementById('general-audio-popup');
+            isGeneralAudioPopupOpen = !isGeneralAudioPopupOpen;
+            if (isGeneralAudioPopupOpen) {
+                popup.classList.remove('translate-y-full', 'md:translate-y-[150%]');
+            } else {
+                popup.classList.add('translate-y-full', 'md:translate-y-[150%]');
+            }
+        }
+
+        function toggleGeneralPlay() {
+            if (generalAyahQueue.length === 0) {
+                showToast('الرجاء اختيار سورة أو جزء أولاً'); return;
+            }
+            if (generalAudioPlayer.paused) {
+                if (generalPlayingIndex === -1) generalPlayingIndex = 0;
+                playGeneralAyah(generalPlayingIndex);
+                document.getElementById('btn-gen-play').innerHTML = '<i class="fa-solid fa-pause ml-1"></i>';
+            } else {
+                generalAudioPlayer.pause();
+                document.getElementById('btn-gen-play').innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+                removeAyahHighlight();
+            }
+        }
+
+        function playGeneralAyahByGlobalNumber(globalNumber) {
+            const index = generalAyahQueue.findIndex(a => a.number === globalNumber);
+            if (index !== -1) {
+                if (!isGeneralAudioPopupOpen) toggleGeneralAudioPopup();
+                playGeneralAyah(index);
+            }
+        }
+
+        function playGeneralAyah(index) {
+            if (index < 0 || index >= generalAyahQueue.length) {
+                resetGeneralAudio(); return;
+            }
+            generalPlayingIndex = index;
+            const ayah = generalAyahQueue[index];
+            const reciter = document.getElementById('general-reciter-select').value || 'Alafasy_128kbps';
+            
+            generalAudioPlayer.src = `https://everyayah.com/data/${reciter}/${padNum(ayah.surah.number)}${padNum(ayah.numberInSurah)}.mp3`;
+            generalAudioPlayer.play().catch(e => console.error("General Audio playback failed", e));
+            
+            document.getElementById('btn-gen-play').innerHTML = '<i class="fa-solid fa-pause ml-1"></i>';
+            document.getElementById('gen-audio-info').innerText = `جاري التلاوة: الآية ﴿${toArabicNumerals(ayah.numberInSurah)}﴾`;
+            
+            highlightAyah(ayah.number, 'general');
+        }
+
+        generalAudioPlayer.addEventListener('ended', () => {
+            playGeneralAyah(generalPlayingIndex + 1);
+        });
+
+        function genAudioNext() {
+            if (generalPlayingIndex < generalAyahQueue.length - 1) playGeneralAyah(generalPlayingIndex + 1);
+        }
+
+        function genAudioPrev() {
+            if (generalPlayingIndex > 0) playGeneralAyah(generalPlayingIndex - 1);
+        }
+
+        function resetGeneralAudio() {
+            generalAudioPlayer.pause();
+            generalAudioPlayer.currentTime = 0;
+            generalPlayingIndex = -1;
+            document.getElementById('btn-gen-play').innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+            document.getElementById('gen-audio-info').innerText = 'استمع للتلاوة الآية بالآية';
+            removeAyahHighlight();
+        }
+
+        document.getElementById('general-reciter-select')?.addEventListener('change', () => {
+            if(!generalAudioPlayer.paused && generalPlayingIndex !== -1) {
+                 playGeneralAyah(generalPlayingIndex);
+            }
+        });
+
+        // --- Shared Highlighting Logic ---
+        function highlightAyah(globalNumber, context = 'schedule') {
+            removeAyahHighlight();
+            const elId = context === 'schedule' ? `ayah-schedule-${globalNumber}` : `ayah-general-${globalNumber}`;
+            const el = document.getElementById(elId);
+            if (el) {
+                el.classList.add('playing');
+                if (context === 'general') {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function removeAyahHighlight() {
+            document.querySelectorAll('.ayah-wrapper').forEach(span => {
+                span.classList.remove('playing');
+            });
+        }
+
+        function removeChunkHighlight() {
+            document.querySelectorAll('.chunk-item').forEach(w => {
+                w.classList.remove('chunk-playing');
+            });
+        }
+
         // --- UI & Tabs Management ---
         function showTab(id) {
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
@@ -954,6 +1404,13 @@
                 scroller.classList.remove('hidden');
             } else {
                 scroller.classList.add('hidden');
+            }
+
+            // Stop audios when switching away
+            if(id !== 'general') resetGeneralAudio();
+            if(id !== 'schedule') {
+                 scheduleAudioPlayer.pause();
+                 removeChunkHighlight();
             }
 
             if(id === 'schedule') renderSchedule();
@@ -985,7 +1442,8 @@
             return num.toString().split('').map(char => (char >= '0' && char <= '9') ? arabicNumbers[parseInt(char)] : char).join('');
         }
 
-        function generateQuranHTML(ayahs) {
+        // Context-aware HTML generator
+        function generateQuranHTML(ayahs, context = 'schedule') {
             let html = '';
             let currentSurahNumber = 0;
 
@@ -1018,21 +1476,70 @@
 
                 let text = ayah.text;
                 if (currentSurahNumber !== 1 && ayah.numberInSurah === 1) {
-                    text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ', '').replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ', '');
+                    text = text.replace(/^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/, '').replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/, '');
                 }
 
-                html += `
-                    <span class="ayah-wrapper">
-                        ${text.trim()} <span class="ayah-number">﴿${toArabicNumerals(ayah.numberInSurah)}﴾</span>
-                    </span>
-                `;
+                if (context === 'schedule') {
+                    // --- Schedule Chunking Logic ---
+                    let words = text.trim().split(/\s+/);
+                    let chunks = [];
+                    let currentChunkWords = [];
+
+                    for (let i = 0; i < words.length; i++) {
+                        currentChunkWords.push(words[i]);
+                        let hasWaqf = /[\u06D6-\u06DC]/.test(words[i]);
+                        if (currentChunkWords.length >= 4 || hasWaqf || i === words.length - 1) {
+                            chunks.push([...currentChunkWords]);
+                            currentChunkWords = [];
+                        }
+                    }
+
+                    let chunksHtml = '';
+                    let charsProcessed = 0;
+                    let totalAyahChars = words.join(' ').length;
+
+                    chunks.forEach((chunkArray) => {
+                        let chunkText = chunkArray.join(' ');
+                        let chunkLength = chunkText.length;
+                        let startRatio = charsProcessed / totalAyahChars;
+                        let endRatio = (charsProcessed + chunkLength) / totalAyahChars;
+                        chunksHtml += `<span class="chunk-item" onclick="event.stopPropagation(); playChunkAudio(${ayah.number}, ${startRatio}, ${endRatio}, this)">${chunkText}</span> `;
+                        charsProcessed += chunkLength + 1;
+                    });
+
+                    html += `
+                        <span class="ayah-wrapper" id="ayah-schedule-${ayah.number}">
+                            ${chunksHtml} <span class="ayah-number" onclick="event.stopPropagation(); playScheduleAyahAudio(${ayah.number})" title="اضغط لسماع الآية كاملة">﴿${toArabicNumerals(ayah.numberInSurah)}﴾</span>
+                        </span>
+                    `;
+                } else if (context === 'general') {
+                    // --- General Tab Audio & Tafsir Logic ---
+                    html += `
+                        <span class="ayah-wrapper cursor-pointer hover:text-brand-goldLight transition-colors" id="ayah-general-${ayah.number}" onclick="showAyahActions(${ayah.number}, event)" title="انقر لإظهار الخيارات">
+                            ${text.trim()} <span class="ayah-number">﴿${toArabicNumerals(ayah.numberInSurah)}﴾</span>
+                        </span>
+                    `;
+                } else {
+                    // --- Review or static contexts ---
+                    html += `
+                        <span class="ayah-wrapper">
+                            ${text.trim()} <span class="ayah-number">﴿${toArabicNumerals(ayah.numberInSurah)}﴾</span>
+                        </span>
+                    `;
+                }
             });
             
             return html;
         }
 
-        // --- TAB 2: SCHEDULE (الحفظ) Logic ---
+        // --- TAB 2: SCHEDULE (الحفظ) Fetching Logic ---
         async function renderSchedule() {
+            scheduleAudioPlayer.pause();
+            chunkStopTime = 0;
+            currentPlayingAyahIndex = -1;
+            removeAyahHighlight();
+            removeChunkHighlight();
+
             const data = DB.get();
             if(!data) {
                 document.getElementById('plans-grid-container').classList.remove('hidden');
@@ -1077,7 +1584,6 @@
 
             let apiData = null; let ayahs = [];
 
-            // Fetch Logic based on plan
             try {
                 if(data.plan === 'page' || (data.plan === 'custom' && data.customType === 'page')) {
                     let amount = data.plan === 'page' ? 1 : data.customAmount;
@@ -1130,8 +1636,10 @@
             loader.classList.add('hidden');
 
             if(apiData && ayahs.length > 0) {
-                renderBox.innerHTML = generateQuranHTML(ayahs);
+                currentAyahQueue = ayahs;
+                renderBox.innerHTML = generateQuranHTML(ayahs, 'schedule');
             } else {
+                currentAyahQueue = [];
                 renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة أو انتهت الختمة.</p>';
             }
         }
@@ -1195,16 +1703,37 @@
             const loader = document.getElementById('general-loading');
             renderBox.innerHTML = ''; loader.classList.remove('hidden');
             resetAutoScroll();
-            const apiData = await fetchQuranData(url);
+            
+            document.getElementById('general-audio-fab').classList.add('hidden');
+            resetGeneralAudio();
+
+            // Fetch Text AND Tafsir in parallel
+            const tafsirUrl = url.replace('quran-uthmani', 'ar.muyassar');
+            
+            const [apiData, tafsirData] = await Promise.all([
+                fetchQuranData(url),
+                fetchQuranData(tafsirUrl)
+            ]);
+
             loader.classList.add('hidden');
-            if(apiData) {
+            
+            if(apiData && tafsirData) {
                 let ayahs = apiData.ayahs || [];
+                let tafsirAyahs = tafsirData.ayahs || [];
+                
                 if(type === 'surah') {
                      const surahInfo = { number: apiData.number, name: apiData.name, numberOfAyahs: apiData.numberOfAyahs, revelationType: apiData.revelationType };
-                     ayahs = apiData.ayahs.map(a => ({ ...a, surah: surahInfo }));
+                     ayahs = ayahs.map((a, idx) => ({ ...a, surah: surahInfo, tafsir: tafsirAyahs[idx] ? tafsirAyahs[idx].text : '' }));
+                } else {
+                     ayahs = ayahs.map((a, idx) => ({ ...a, tafsir: tafsirAyahs[idx] ? tafsirAyahs[idx].text : '' }));
                 }
-                renderBox.innerHTML = generateQuranHTML(ayahs);
-            } else renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة.</p>';
+                
+                generalAyahQueue = ayahs;
+                renderBox.innerHTML = generateQuranHTML(ayahs, 'general');
+                document.getElementById('general-audio-fab').classList.remove('hidden');
+            } else {
+                renderBox.innerHTML = '<p class="text-center text-red-400">فشل الاتصال بالشبكة أو جلب التفسير.</p>';
+            }
         }
 
         function buildCustomDropdown(selectId, onChangeCallback) {
@@ -1341,7 +1870,7 @@
             } catch(e){}
             
             loader.classList.add('hidden');
-            if(apiData && ayahs.length > 0) render.innerHTML = generateQuranHTML(ayahs);
+            if(apiData && ayahs.length > 0) render.innerHTML = generateQuranHTML(ayahs, 'review');
             else render.innerHTML = '<p class="text-center text-red-400">فشل جلب الورد.</p>';
         }
         function closeReview() { document.getElementById('rev-full-view').classList.add('hidden'); }
@@ -1368,20 +1897,11 @@
 
         function updateAudioPlayer() {
             const surahId = document.getElementById('audio-surah').value;
-            const reciterCode = document.getElementById('audio-reciter').value;
+            const mp3qServerPath = document.getElementById('audio-reciter').value;
             if(!surahId) return;
 
             const paddedSurah = String(surahId).padStart(3, '0');
-            // MP3Quran base servers mapping
-            const reciterServers = {
-                'minsh': 'server10.mp3quran.net/minsh',
-                'husr': 'server13.mp3quran.net/husr',
-                'yasser': 'server11.mp3quran.net/yasser',
-                'afs': 'server8.mp3quran.net/afs',
-                'shur': 'server7.mp3quran.net/shur'
-            };
-
-            const baseUrl = `https://${reciterServers[reciterCode]}/${paddedSurah}.mp3`;
+            const baseUrl = `https://${mp3qServerPath}/${paddedSurah}.mp3`;
             const player = document.getElementById('audio-player');
             const titleEl = document.getElementById('audio-title');
             
@@ -1416,12 +1936,21 @@
         // --- Init App ---
         window.onload = () => {
             initTheme(); 
+            initReciters();
             particlesJS('particles-js', { "particles": { "number": { "value": window.innerWidth < 768 ? 20 : 40 }, "color": { "value": "#10b981" }, "opacity": { "value": 0.3 }, "size": { "value": 2 }, "line_linked": { "enable": true, "distance": 150, "color": "#10b981", "opacity": 0.2 }, "move": { "enable": true, "speed": 1.5 } }, "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } } }, "retina_detect": true });
+            
+            // Notification Engine Init
             if ("Notification" in window) {
-                if (Notification.permission === "granted") { localStorage.setItem('notifs', 'on'); startNotificationEngine(); } 
-                else if (Notification.permission !== "denied") { document.getElementById('notif-prompt').classList.remove('hidden'); }
+                if (Notification.permission === "granted") { 
+                    localStorage.setItem('notifs', 'on'); 
+                    startNotificationEngine(); 
+                } 
+                else if (Notification.permission === "default" && localStorage.getItem('notif_seen') !== 'true') { 
+                    document.getElementById('notif-prompt').classList.remove('hidden'); 
+                }
             }
-            showTab('general'); // Default to General Mushaf as requested
+            
+            showTab('general'); // Default to General Mushaf
             lucide.createIcons();
         };
     </script>
