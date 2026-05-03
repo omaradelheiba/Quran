@@ -838,7 +838,11 @@
 
         // --- Helper Function for URL padding ---
         const padNum = (num) => String(num).padStart(3, '0');
-
+function syncNotifsWithApp() {
+    if (window.NakhtemChannel) {
+        window.NakhtemChannel.postMessage(JSON.stringify(notifTimes));
+    }
+}
         function initReciters() {
             const scheduleSelect = document.getElementById('schedule-reciter');
             const reviewSelect = document.getElementById('audio-reciter');
