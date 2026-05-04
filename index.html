@@ -61,6 +61,118 @@
             --brand-glow: #a3a3a3;
         }
 
+        /* --- Light Theme Overrides --- */
+        body.theme-light {
+            --brand-dark: #f8fafc;
+            --brand-main: #ffffff;
+            --brand-light: #e2e8f0;
+            --brand-neon: #059669;
+            --brand-glow: #047857;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        
+        .theme-light .text-white { color: #0f172a !important; }
+        .theme-light .text-gray-400, 
+        .theme-light .text-gray-300, 
+        .theme-light .text-gray-200 { color: #475569 !important; }
+        .theme-light .text-brand-goldLight { color: #064e3b !important; }
+        .theme-light .text-brand-glow { color: #047857 !important; }
+        
+        .theme-light .bg-brand-dark, 
+        .theme-light .bg-brand-dark\/40, 
+        .theme-light .bg-brand-dark\/50, 
+        .theme-light .bg-brand-dark\/60, 
+        .theme-light .bg-brand-dark\/80, 
+        .theme-light .bg-brand-dark\/95,
+        .theme-light .bg-black\/50,
+        .theme-light .bg-black\/60,
+        .theme-light .bg-black\/80 { background-color: #ffffff !important; }
+        
+        .theme-light .glass-card { 
+            background: rgba(255, 255, 255, 0.8) !important; 
+            border: 1px solid rgba(0, 0, 0, 0.1) !important; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; 
+        }
+        .theme-light .glass-header { 
+            background: rgba(255, 255, 255, 0.95) !important; 
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05) !important; 
+        }
+        
+        .theme-light .border-brand-light\/30, 
+        .theme-light .border-brand-light\/20,
+        .theme-light .border-brand-light\/50,
+        .theme-light .border-brand-gold\/30 { border-color: #cbd5e1 !important; }
+        
+        .theme-light .quran-text { color: #000000 !important; text-shadow: none !important; }
+        .theme-light .surah-frame { 
+            background: linear-gradient(to right, transparent, rgba(5, 150, 105, 0.1), transparent) !important; 
+            border-color: #059669 !important; 
+        }
+        .theme-light .surah-frame h2 { color: #064e3b !important; text-shadow: none !important; }
+        .theme-light .ayah-number { color: #059669 !important; text-shadow: none !important; }
+        
+        .theme-light .chunk-item:hover { background: rgba(5, 150, 105, 0.1) !important; color: #059669 !important; border-bottom-color: #059669 !important;}
+        .theme-light .chunk-playing { background: rgba(5, 150, 105, 0.15) !important; color: #064e3b !important; text-shadow: none !important; border-bottom-color: #059669 !important;}
+        .theme-light .ayah-wrapper.playing { background-color: rgba(5, 150, 105, 0.1) !important; color: #0f172a !important; }
+        
+        .theme-light .custom-dropdown-selected { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        .theme-light .custom-dropdown-options { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
+        .theme-light .custom-dropdown-option { color: #0f172a !important; border-bottom-color: #f1f5f9 !important; }
+        .theme-light .custom-dropdown-option:hover { background: #f1f5f9 !important; color: #059669 !important; border-right-color: #059669 !important; }
+        
+        .theme-light .nav-btn { color: #64748b !important; }
+        .theme-light .nav-btn.active { color: #059669 !important; background: #ecfdf5 !important; border-color: #a7f3d0 !important; box-shadow: none !important; }
+        
+        .theme-light select, .theme-light input[type="number"], .theme-light input[type="time"] { 
+            background-color: #f8fafc !important; 
+            color: #0f172a !important; 
+            border-color: #cbd5e1 !important; 
+        }
+        
+        .theme-light #ayah-action-menu { 
+            background: rgba(255,255,255,0.95) !important; 
+            border-color: #cbd5e1 !important; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+        .theme-light #ayah-action-menu button { background-color: #f1f5f9 !important; color: #059669 !important; border: 1px solid #e2e8f0; }
+        .theme-light #ayah-action-menu button:hover { background-color: #059669 !important; color: #ffffff !important; }
+        
+        .theme-light #tafsir-modal .glass-card { background: #ffffff !important; border-top-color: #059669 !important; }
+        .theme-light #tafsir-modal .bg-brand-dark { background-color: #f8fafc !important; border-color: #cbd5e1 !important;}
+        .theme-light #tafsir-text { color: #1e293b !important; }
+        .theme-light #tafsir-title { color: #064e3b !important; }
+        
+        .theme-light #general-audio-popup { 
+            background: rgba(255, 255, 255, 0.95) !important; 
+            border-color: #cbd5e1 !important; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1) !important;
+        }
+        .theme-light #gen-audio-info { color: #0f172a !important; }
+        
+        .theme-light .bg-brand-main { background-color: #f1f5f9 !important; color: #059669 !important; border: 1px solid #cbd5e1 !important; }
+        .theme-light .bg-brand-main:hover { background-color: #e2e8f0 !important; }
+        
+        .theme-light .bg-brand-neon { background-color: #059669 !important; color: #ffffff !important; }
+        .theme-light .bg-brand-neon\/10, .theme-light .bg-brand-neon\/20 { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; color: #059669 !important;}
+        .theme-light .text-brand-neon { color: #059669 !important; }
+        
+        .theme-light #btn-gen-play { background-color: #059669 !important; border: none !important;}
+        .theme-light #btn-gen-play i { color: #ffffff !important; }
+        .theme-light #general-audio-fab { background-color: #059669 !important; color: white !important; border:none !important;}
+        .theme-light #general-audio-fab i { color: white !important;}
+        
+        .theme-light .auto-scroll-container { background: rgba(255,255,255,0.9) !important; border-color: #cbd5e1 !important; }
+        .theme-light .scroll-thumb { background: linear-gradient(135deg, #10b981, #059669) !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important; }
+        .theme-light .scroll-track::after { background: #cbd5e1 !important; }
+        
+        .theme-light img[src="logo.svg"] { filter: invert(1) !important; } 
+        
+        .theme-light audio { filter: invert(0) sepia(0) hue-rotate(0) saturate(1) brightness(1) !important; border-radius: 8px;}
+        
+        .theme-light .btn-gold { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3) !important; border:none !important; }
+        .theme-light .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5) !important; }
+
         body {
             background-color: var(--brand-dark);
             color: #ffffff;
@@ -838,11 +950,7 @@
 
         // --- Helper Function for URL padding ---
         const padNum = (num) => String(num).padStart(3, '0');
-function syncNotifsWithApp() {
-    if (window.NakhtemChannel) {
-        window.NakhtemChannel.postMessage(JSON.stringify(notifTimes));
-    }
-}
+
         function initReciters() {
             const scheduleSelect = document.getElementById('schedule-reciter');
             const reviewSelect = document.getElementById('audio-reciter');
@@ -910,24 +1018,51 @@ function syncNotifsWithApp() {
 
         // --- Theme Management ---
         function initTheme() {
-            const savedTheme = localStorage.getItem('nakhtem_theme');
+            const savedTheme = localStorage.getItem('nakhtem_theme') || 'green';
+            document.body.classList.remove('theme-black', 'theme-light');
             if (savedTheme === 'black') {
                 document.body.classList.add('theme-black');
+            } else if (savedTheme === 'light') {
+                document.body.classList.add('theme-light');
             }
             updateThemeIcons();
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('theme-black');
-            const isBlack = document.body.classList.contains('theme-black');
-            localStorage.setItem('nakhtem_theme', isBlack ? 'black' : 'green');
+            const currentTheme = localStorage.getItem('nakhtem_theme') || 'green';
+            let newTheme = 'green';
+            let msg = '';
+            
+            // Cycle through themes: Green -> Black -> Light -> Green
+            if (currentTheme === 'green') {
+                newTheme = 'black';
+                msg = "تم تفعيل الوضع الملكي الأسود";
+            } else if (currentTheme === 'black') {
+                newTheme = 'light';
+                msg = "تم تفعيل الوضع الفاتح المريح";
+            } else {
+                newTheme = 'green';
+                msg = "تم تفعيل الوضع الملكي الزيتي";
+            }
+            
+            document.body.classList.remove('theme-black', 'theme-light');
+            if (newTheme !== 'green') {
+                document.body.classList.add(`theme-${newTheme}`);
+            }
+            
+            localStorage.setItem('nakhtem_theme', newTheme);
             updateThemeIcons();
-            showToast(isBlack ? "تم تفعيل الوضع الملكي الأسود" : "تم تفعيل الوضع الملكي الزيتي");
+            showToast(msg);
         }
 
         function updateThemeIcons() {
-            const isBlack = document.body.classList.contains('theme-black');
-            const iconClass = isBlack ? 'fa-sun' : 'fa-moon';
+            const currentTheme = localStorage.getItem('nakhtem_theme') || 'green';
+            let iconClass = 'fa-moon'; 
+            
+            if (currentTheme === 'green') iconClass = 'fa-moon';
+            else if (currentTheme === 'black') iconClass = 'fa-circle-half-stroke';
+            else if (currentTheme === 'light') iconClass = 'fa-sun';
+            
             const desktopIcon = document.getElementById('theme-icon-desktop');
             const mobileIcon = document.getElementById('theme-icon-mobile');
             if (desktopIcon) desktopIcon.className = `fa-solid ${iconClass}`;
